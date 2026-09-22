@@ -29,6 +29,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // Expose the profile to CSS so the accent color follows it across the whole page.
+  useEffect(() => {
+    document.documentElement.dataset.profile = profile
+  }, [profile])
+
   const setProfile = (p: ProfileId) => {
     setProfileState(p)
     try {

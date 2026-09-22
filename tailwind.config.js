@@ -8,31 +8,38 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Editorial dark/light duo — sections flip between the two.
-        ink: '#10171D',      // dark section background / light section text
-        paper: '#F1EADC',    // dark section text / light section background
-        accent: '#A8E063',   // lime — used sparingly: links, one word per headline, numbers
-        muted: '#8A9099',    // secondary text on dark
-        mutedInk: '#6B6459', // secondary text on light
-        line: 'rgba(241,234,220,0.14)',   // hairline borders on dark
-        lineInk: 'rgba(16,23,29,0.14)',   // hairline borders on light
+        // Obsidian & champagne — dark sections alternate with ivory ones.
+        ink: '#0A0D13',        // obsidian: dark section background / light section text
+        surface: '#11151D',    // raised panels on dark
+        paper: '#F3EDE2',      // ivory: dark section text / light section background
+        accent: 'rgb(var(--accent) / <alpha-value>)',          // profile color — italics, numerals, hairlines, CTAs
+        accentDeep: 'rgb(var(--accent-deep) / <alpha-value>)', // darker profile color for use on ivory (contrast)
+        muted: '#8C8F96',      // secondary text on dark
+        mutedInk: '#6E6658',   // secondary text on ivory
+        line: 'rgba(243,237,226,0.10)',   // hairline borders on dark
+        lineInk: 'rgba(10,13,19,0.12)',   // hairline borders on ivory
       },
       fontFamily: {
+        display: ['var(--font-display)', 'ui-serif', 'Georgia', 'serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'slide-up': 'slideUp 0.5s ease-out',
+        marquee: 'marquee 45s linear infinite',
+        drift: 'drift 18s ease-in-out infinite alternate',
       },
       keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+        drift: {
+          '0%': { transform: 'translate3d(0,0,0) scale(1)' },
+          '100%': { transform: 'translate3d(-6%,4%,0) scale(1.15)' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-120%) skewX(-20deg)' },
+          '100%': { transform: 'translateX(320%) skewX(-20deg)' },
         },
       },
     },
