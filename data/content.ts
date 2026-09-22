@@ -87,6 +87,7 @@ export interface SiteContent {
     tag: string
     stats: { value: string; label: string }[]
     location: string
+    secondLocation: string
   }
   skillsHeading: string
   experienceHeading: string
@@ -107,12 +108,10 @@ export interface SiteContent {
     contactHeading: string
     languagesHeading: string
     educationHeading: string
-    certificationsHeading: string
     softSkillsHeading: string
   }
   education: EducationEntry[]
   languages: LanguageItem[]
-  certifications: { title: string; place: string; date: string }[]
   softSkills: { title: string; description: string }[]
   contact: {
     eyebrow: string
@@ -136,7 +135,7 @@ export interface SiteContent {
 
 const contactInfo = {
   email: 'jadfalaq@gmail.com',
-  phones: ['+33 7 45 50 31 19'],
+  phones: ['+33 7 45 50 31 19', '+212 6 05 98 23 57'],
   github: 'github.com/JadFalaq',
   githubUrl: 'https://github.com/JadFalaq',
   linkedin: 'linkedin.com/in/jadfalaq',
@@ -477,6 +476,7 @@ const fr: SiteContent = {
       { value: '14', label: 'Projets réalisés' },
     ],
     location: 'Grenoble, France',
+    secondLocation: 'Casablanca, Maroc',
   },
   skillsHeading: 'Compétences techniques',
   experienceHeading: 'Expérience professionnelle',
@@ -497,7 +497,6 @@ const fr: SiteContent = {
     contactHeading: 'Contact',
     languagesHeading: 'Langues',
     educationHeading: 'Formation',
-    certificationsHeading: 'Certifications & Événements',
     softSkillsHeading: 'Soft Skills',
   },
   education: [
@@ -521,10 +520,6 @@ const fr: SiteContent = {
     { name: 'Anglais', level: 'Bilingue' },
     { name: 'Arabe', level: 'Langue maternelle' },
     { name: 'Espagnol', level: 'B1' },
-  ],
-  certifications: [
-    { title: 'ASEAI 2026 — African Fall School on Software Engineering & AI', place: 'ENSIAS, Rabat', date: 'Septembre 2026' },
-    { title: 'NVIDIA DLI Workshop — Rapid Application Development with LLMs', place: 'hessian.AI (en ligne)', date: 'Novembre 2025' },
   ],
   softSkills: [
     { title: 'Organisation & Travail en équipe', description: 'Responsable logistique du Forum Club ENSIAS (rencontres entreprises–étudiants)' },
@@ -559,7 +554,7 @@ const fr: SiteContent = {
           title: 'Stagiaire Ingénieur IA — Quality Engineering',
           company: 'Renault Digital',
           type: 'Stage',
-          period: 'Juin 2026 — Août 2026',
+          period: 'Juin 2026 — Septembre 2026',
           location: 'Casablanca, Maroc',
           logo: '/rdm logo.jpg',
           description: [
@@ -606,7 +601,7 @@ const fr: SiteContent = {
           title: 'Stagiaire Ingénieur IA — Quality Engineering',
           company: 'Renault Digital',
           type: 'Stage',
-          period: 'Juin 2026 — Août 2026',
+          period: 'Juin 2026 — Septembre 2026',
           location: 'Casablanca, Maroc',
           logo: '/rdm logo.jpg',
           description: [
@@ -652,7 +647,7 @@ const fr: SiteContent = {
           title: 'Stagiaire Ingénieur IA — Quality Engineering',
           company: 'Renault Digital',
           type: 'Stage',
-          period: 'Juin 2026 — Août 2026',
+          period: 'Juin 2026 — Septembre 2026',
           location: 'Casablanca, Maroc',
           logo: '/rdm logo.jpg',
           description: [
@@ -732,6 +727,7 @@ const en: SiteContent = {
       { value: '14', label: 'Delivered projects' },
     ],
     location: 'Grenoble, France',
+    secondLocation: 'Casablanca, Morocco',
   },
   skillsHeading: 'Technical skills',
   experienceHeading: 'Professional experience',
@@ -752,7 +748,6 @@ const en: SiteContent = {
     contactHeading: 'Contact',
     languagesHeading: 'Languages',
     educationHeading: 'Education',
-    certificationsHeading: 'Certifications & Events',
     softSkillsHeading: 'Soft Skills',
   },
   education: [
@@ -776,10 +771,6 @@ const en: SiteContent = {
     { name: 'English', level: 'Bilingual' },
     { name: 'Arabic', level: 'Native' },
     { name: 'Spanish', level: 'B1' },
-  ],
-  certifications: [
-    { title: 'ASEAI 2026 — African Fall School on Software Engineering & AI', place: 'ENSIAS, Rabat', date: 'September 2026' },
-    { title: 'NVIDIA DLI Workshop — Rapid Application Development with LLMs', place: 'hessian.AI (online)', date: 'November 2025' },
   ],
   softSkills: [
     { title: 'Organization & Teamwork', description: 'Logistics lead of the ENSIAS Forum Club (company–student meetings)' },
@@ -814,7 +805,7 @@ const en: SiteContent = {
           title: 'AI Engineer Intern — Quality Engineering',
           company: 'Renault Digital',
           type: 'Internship',
-          period: 'Jun. 2026 — Aug. 2026',
+          period: 'Jun. 2026 — Sep. 2026',
           location: 'Casablanca, Morocco',
           logo: '/rdm logo.jpg',
           description: [
@@ -861,7 +852,7 @@ const en: SiteContent = {
           title: 'AI Engineer Intern — Quality Engineering',
           company: 'Renault Digital',
           type: 'Internship',
-          period: 'Jun. 2026 — Aug. 2026',
+          period: 'Jun. 2026 — Sep. 2026',
           location: 'Casablanca, Morocco',
           logo: '/rdm logo.jpg',
           description: [
@@ -907,7 +898,7 @@ const en: SiteContent = {
           title: 'AI Engineer Intern — Quality Engineering',
           company: 'Renault Digital',
           type: 'Internship',
-          period: 'Jun. 2026 — Aug. 2026',
+          period: 'Jun. 2026 — Sep. 2026',
           location: 'Casablanca, Morocco',
           logo: '/rdm logo.jpg',
           description: [

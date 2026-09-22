@@ -792,6 +792,7 @@ export default function Portfolio() {
                     <p key={ph}>{ph}</p>
                   ))}
                   <p>{t.bio.location}</p>
+                  <p>{t.bio.secondLocation}</p>
                   <a href={contact.githubUrl} target="_blank" rel="noopener noreferrer" className="block underline-offset-4 hover:text-accentDeep hover:underline">
                     {contact.github}
                   </a>
@@ -808,18 +809,6 @@ export default function Portfolio() {
                     <div key={l.name} className="flex justify-between py-2">
                       <span>{l.name}</span>
                       <span className="font-display italic text-mutedInk">{l.level}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-accentDeep">{t.cv.certificationsHeading}</h3>
-                <div className="mt-4 space-y-4 text-sm">
-                  {t.certifications.map((c) => (
-                    <div key={c.title}>
-                      <p className="font-semibold leading-snug">{c.title}</p>
-                      <p className="mt-1 text-xs text-mutedInk">{c.place} · {c.date}</p>
                     </div>
                   ))}
                 </div>

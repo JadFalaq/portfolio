@@ -555,7 +555,7 @@ footer { position: relative; overflow: hidden; border-top: 1px solid var(--line)
 const IMG = 'public/'
 const CONTACT = {
   email: 'jadfalaq@gmail.com',
-  phones: ['+33 7 45 50 31 19'],
+  phones: ['+33 7 45 50 31 19', '+212 6 05 98 23 57'],
   github: 'github.com/JadFalaq',
   githubUrl: 'https://github.com/JadFalaq',
   linkedin: 'linkedin.com/in/jadfalaq',
@@ -864,7 +864,7 @@ const projectsEn = {
 // ---------------------------------------------------------------------------
 const RENAULT_FR = {
   title: 'Stagiaire Ingénieur IA — Quality Engineering', company: 'Renault Digital', type: 'Stage',
-  period: 'Juin 2026 — Août 2026', location: 'Casablanca, Maroc', logo: 'rdm logo.jpg',
+  period: 'Juin 2026 — Septembre 2026', location: 'Casablanca, Maroc', logo: 'rdm logo.jpg',
 }
 const AKWA_FR = {
   title: 'ML & Data Engineer — Équipe Data', company: 'AKWA Group', type: 'Stage',
@@ -872,7 +872,7 @@ const AKWA_FR = {
 }
 const RENAULT_EN = {
   title: 'AI Engineer Intern — Quality Engineering', company: 'Renault Digital', type: 'Internship',
-  period: 'Jun. 2026 — Aug. 2026', location: 'Casablanca, Morocco', logo: 'rdm logo.jpg',
+  period: 'Jun. 2026 — Sep. 2026', location: 'Casablanca, Morocco', logo: 'rdm logo.jpg',
 }
 const AKWA_EN = {
   title: 'ML & Data Engineer — Data Team', company: 'AKWA Group', type: 'Internship',
@@ -927,6 +927,7 @@ const fr = {
       { value: '14', label: 'Projets réalisés' },
     ],
     location: 'Grenoble, France',
+    secondLocation: 'Casablanca, Maroc',
   },
   skillsHeading: 'Compétences techniques',
   experienceHeading: 'Expérience professionnelle',
@@ -942,7 +943,7 @@ const fr = {
     description: 'Chaque profil a son propre CV, recadré sur les expériences et projets les plus pertinents.',
     downloadLabel: 'Télécharger le CV',
     contactHeading: 'Contact', languagesHeading: 'Langues', educationHeading: 'Formation',
-    certificationsHeading: 'Certifications & Événements', softSkillsHeading: 'Soft Skills',
+    softSkillsHeading: 'Soft Skills',
   },
   education: [
     {
@@ -963,10 +964,6 @@ const fr = {
     { name: 'Anglais', level: 'Bilingue' },
     { name: 'Arabe', level: 'Langue maternelle' },
     { name: 'Espagnol', level: 'B1' },
-  ],
-  certifications: [
-    { title: 'ASEAI 2026 — African Fall School on Software Engineering & AI', place: 'ENSIAS, Rabat', date: 'Septembre 2026' },
-    { title: 'NVIDIA DLI Workshop — Rapid Application Development with LLMs', place: 'hessian.AI (en ligne)', date: 'Novembre 2025' },
   ],
   softSkills: [
     { title: 'Organisation & Travail en équipe', description: 'Responsable logistique du Forum Club ENSIAS (rencontres entreprises–étudiants)' },
@@ -1093,6 +1090,7 @@ const en = {
       { value: '14', label: 'Delivered projects' },
     ],
     location: 'Grenoble, France',
+    secondLocation: 'Casablanca, Morocco',
   },
   skillsHeading: 'Technical skills',
   experienceHeading: 'Professional experience',
@@ -1108,7 +1106,7 @@ const en = {
     description: 'Each profile has its own CV, reframed around its most relevant experience and projects.',
     downloadLabel: 'Download CV',
     contactHeading: 'Contact', languagesHeading: 'Languages', educationHeading: 'Education',
-    certificationsHeading: 'Certifications & Events', softSkillsHeading: 'Soft Skills',
+    softSkillsHeading: 'Soft Skills',
   },
   education: [
     {
@@ -1129,10 +1127,6 @@ const en = {
     { name: 'English', level: 'Bilingual' },
     { name: 'Arabic', level: 'Native' },
     { name: 'Spanish', level: 'B1' },
-  ],
-  certifications: [
-    { title: 'ASEAI 2026 — African Fall School on Software Engineering & AI', place: 'ENSIAS, Rabat', date: 'September 2026' },
-    { title: 'NVIDIA DLI Workshop — Rapid Application Development with LLMs', place: 'hessian.AI (online)', date: 'November 2025' },
   ],
   softSkills: [
     { title: 'Organization & Teamwork', description: 'Logistics lead of the ENSIAS Forum Club (company–student meetings)' },
@@ -1407,6 +1401,7 @@ function renderProfile(animate) {
         <p>${CONTACT.email}</p>
         ${CONTACT.phones.map((ph) => `<p>${ph}</p>`).join('')}
         <p>${esc(t.bio.location)}</p>
+        <p>${esc(t.bio.secondLocation)}</p>
         <a href="${CONTACT.githubUrl}" target="_blank" rel="noopener noreferrer">${CONTACT.github}</a>
         <a href="${CONTACT.linkedinUrl}" target="_blank" rel="noopener noreferrer">${CONTACT.linkedin}</a>
       </div>
@@ -1414,10 +1409,6 @@ function renderProfile(animate) {
     <div>
       <h3 class="cv-h">${t.cv.languagesHeading}</h3>
       <div class="bx">${t.languages.map((l) => `<div class="lang-row"><span>${l.name}</span><em>${l.level}</em></div>`).join('')}</div>
-    </div>
-    <div>
-      <h3 class="cv-h">${t.cv.certificationsHeading}</h3>
-      <div class="bx">${t.certifications.map((c) => `<div class="it"><b>${esc(c.title)}</b><small>${esc(c.place)} · ${esc(c.date)}</small></div>`).join('')}</div>
     </div>
     <div>
       <h3 class="cv-h">${t.cv.softSkillsHeading}</h3>
