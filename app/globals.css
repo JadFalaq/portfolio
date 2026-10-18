@@ -33,6 +33,21 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Anchored sections land below the fixed navbar. */
+section[id],
+#all-projects {
+  scroll-margin-top: 5.5rem;
+}
+
+/* Visible keyboard focus everywhere; darker ring on ivory sections. */
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 3px;
+}
+.bg-paper :focus-visible {
+  outline-color: rgb(var(--accent-deep));
+}
+
 ::selection {
   background-color: rgb(var(--accent));
   color: #0A0D13;
@@ -111,14 +126,39 @@ html {
   }
 }
 
+/* Hero intro — pure CSS so the content is painted from the server HTML. */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-line {
+  from { transform: translateY(110%); }
+  to { transform: none; }
+}
+.hero-rise {
+  animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-line {
+  animation: hero-line 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @keyframes shimmer {
   0% { transform: translateX(-120%) skewX(-20deg); }
   100% { transform: translateX(320%) skewX(-20deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .animate-marquee,
-  .animate-drift {
+  .animate-drift,
+  .animate-ping,
+  .hero-rise,
+  .hero-line {
+    animation: none;
+  }
+  .btn-gold:hover::before {
     animation: none;
   }
 }

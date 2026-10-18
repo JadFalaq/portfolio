@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion'
+import { motion, AnimatePresence, MotionConfig, useScroll, useSpring } from 'framer-motion'
 import Image from 'next/image'
 import {
   ArrowUpRight,
   ArrowUp,
+  ArrowDown,
   Download,
   Mail,
   MapPin,
@@ -24,6 +25,7 @@ import {
   Check,
 } from 'lucide-react'
 import ProjectCard from '../components/ProjectCard'
+import FeaturedProjectCard from '../components/FeaturedProjectCard'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProfile, PROFILE_IDS, type ProfileId } from '../contexts/ProfileContext'
 import { siteContent, contact } from '../data/content'
@@ -101,6 +103,15 @@ export default function Portfolio() {
     setShowAllProjects(false)
   }, [profile])
 
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
   const selectProfile = (id: ProfileId) => {
     setProfile(id)
     setMenuOpen(false)
@@ -146,10 +157,13 @@ export default function Portfolio() {
     }
   }
 
-  const curatedProjects = p.projectIds.map((id) => ({ id, ...t.projects[id] }))
-  const remainingIds = Object.keys(t.projects).filter((id) => !p.projectIds.includes(id))
-  const remainingProjects = remainingIds.map((id) => ({ id, ...t.projects[id] }))
-  const visibleProjects = showAllProjects ? [...curatedProjects, ...remainingProjects] : curatedProjects
+  const curatedProjects = p.projectIds.map((id) => t.projects[id])
+  const featuredProjects = p.featuredIds.map((id) => t.projects[id])
+  // "View all": every other project, profile order first. Experience-only entries
+  // (no public repo, e.g. Renault Digital) are already covered by the Experience section.
+  const otherProjects = Array.from(new Set([...p.projectIds, ...Object.keys(t.projects)]))
+    .filter((id) => !p.featuredIds.includes(id) && !t.projects[id].detailsHref)
+    .map((id) => t.projects[id])
 
   // Marquee band: the current profile's skills, de-duplicated.
   const marqueeItems = Array.from(new Set(p.skills.flatMap((g) => g.items))).slice(0, 18)
@@ -164,6 +178,7 @@ export default function Portfolio() {
     'w-full border-0 border-b border-line bg-transparent px-0 py-4 text-base text-paper placeholder-muted/70 outline-none transition-colors focus:border-accent focus:ring-0'
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen bg-ink text-paper">
       {/* Scroll progress */}
       <motion.div
@@ -180,16 +195,16 @@ export default function Portfolio() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-10">
-          <a href="#hero" className="group flex items-baseline gap-2">
+          <a href="#hero" className="group flex items-baseline gap-2" aria-label="Jad Falaq — accueil">
             <span className="font-display text-3xl italic leading-none text-paper">J</span>
             <span className="h-1.5 w-1.5 rounded-full bg-accent transition-transform group-hover:scale-150" />
             <span className="font-display text-3xl italic leading-none text-paper">F</span>
           </a>
 
-          <div className="hidden items-center gap-6 md:flex lg:gap-8">
+          <div className="hidden items-center gap-6 lg:flex xl:gap-8">
             {/* Profile switcher — all three profiles visible, each with its own color */}
             <div
-              role="radiogroup"
+              role="group"
               aria-label={t.nav.profileMenu.label}
               className="flex items-center gap-1 rounded-full border border-line bg-paper/[0.02] p-1"
             >
@@ -199,8 +214,8 @@ export default function Portfolio() {
                 return (
                   <button
                     key={id}
-                    role="radio"
-                    aria-checked={active}
+                    type="button"
+                    aria-pressed={active}
                     title={t.profiles[id].title}
                     onClick={() => selectProfile(id)}
                     className={`flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] transition-all duration-300 ${
@@ -222,7 +237,7 @@ export default function Portfolio() {
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className={`relative hidden text-[13px] tracking-wide transition-colors lg:block ${
+                className={`relative text-[13px] tracking-wide transition-colors ${
                   activeSection === item.id ? 'text-paper' : 'text-muted hover:text-paper'
                 }`}
               >
@@ -237,14 +252,21 @@ export default function Portfolio() {
             <button
               onClick={toggleLanguage}
               className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.15em] text-muted transition-colors hover:text-accent"
-              aria-label="Toggle language"
+              aria-label={language === 'fr' ? 'Switch to English' : 'Passer en français'}
             >
               <LanguagesIcon size={13} />
               {language === 'fr' ? 'FR' : 'EN'}
             </button>
           </div>
 
-          <button className="text-paper md:hidden" onClick={() => setMenuOpen((v) => !v)} aria-label="Menu">
+          <button
+            type="button"
+            className="-mr-2 flex h-11 w-11 items-center justify-center text-paper lg:hidden"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+          >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
@@ -252,11 +274,12 @@ export default function Portfolio() {
         <AnimatePresence>
           {menuOpen && (
             <motion.div
+              id="mobile-menu"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: EASE }}
-              className="overflow-hidden border-t border-line md:hidden"
+              className="overflow-hidden border-t border-line lg:hidden"
             >
               <div className="flex flex-col gap-6 px-5 py-6">
                 <div>
@@ -265,6 +288,8 @@ export default function Portfolio() {
                     {PROFILE_IDS.map((id, index) => (
                       <button
                         key={id}
+                        type="button"
+                        aria-pressed={profile === id}
                         onClick={() => selectProfile(id)}
                         className="flex w-full items-start gap-3 border-b border-line px-4 py-3.5 text-left last:border-b-0"
                         style={profile === id ? { backgroundColor: `${PROFILE_COLORS[id]}14` } : undefined}
@@ -295,8 +320,10 @@ export default function Portfolio() {
                   </a>
                 ))}
                 <button
+                  type="button"
                   onClick={toggleLanguage}
-                  className="flex w-fit items-center gap-1.5 font-mono text-xs tracking-[0.15em] text-muted"
+                  aria-label={language === 'fr' ? 'Switch to English' : 'Passer en français'}
+                  className="flex min-h-[44px] w-fit items-center gap-1.5 font-mono text-xs tracking-[0.15em] text-muted"
                 >
                   <LanguagesIcon size={13} />
                   {language === 'fr' ? 'FR' : 'EN'}
@@ -310,8 +337,10 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       {/* Hero                                                              */}
       {/* ---------------------------------------------------------------- */}
-      <section id="hero" className="grain relative flex min-h-[100svh] items-center overflow-hidden pt-32 pb-24">
-        {/* Atmosphere: drifting gold glow + editorial column rules */}
+      {/* Intro animations are CSS (.hero-rise / .hero-line) so the hero is painted
+          from the server HTML instead of waiting for hydration. */}
+      <section id="hero" className="grain relative flex min-h-[100svh] items-center overflow-hidden pb-20 pt-28 md:pt-32">
+        {/* Atmosphere: drifting glow + editorial column rules */}
         <div className="pointer-events-none absolute -right-40 -top-40 h-[42rem] w-[42rem] animate-drift rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.22),transparent_65%)] blur-2xl" />
         <div className="pointer-events-none absolute -bottom-60 -left-40 h-[36rem] w-[36rem] rounded-full bg-[radial-gradient(circle,rgba(120,140,190,0.10),transparent_65%)] blur-2xl" />
         <div className="pointer-events-none absolute inset-0 mx-auto hidden max-w-7xl grid-cols-4 px-10 lg:grid">
@@ -321,97 +350,140 @@ export default function Portfolio() {
         </div>
 
         <div className="relative mx-auto w-full max-w-7xl px-5 md:px-10">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, ease: EASE }}>
+          <div className="hero-rise">
             <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-          </motion.div>
-
-          <div className="mt-8 flex flex-col items-start justify-between gap-12 lg:flex-row lg:items-end">
-            <h1 className="font-display text-[3.6rem] leading-[0.95] tracking-[-0.02em] sm:text-7xl md:text-8xl lg:text-[8.5rem]">
-              <span className="block overflow-hidden">
-                <motion.span
-                  className="block"
-                  initial={{ y: '110%' }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1.1, ease: EASE, delay: 0.1 }}
-                >
-                  {t.hero.headline[0]}
-                </motion.span>
-              </span>
-              <span className="block overflow-hidden pb-2">
-                <motion.span
-                  className="block"
-                  initial={{ y: '110%' }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1.1, ease: EASE, delay: 0.25 }}
-                >
-                  {t.hero.headline[1]} <em className="text-gold pr-2">{t.hero.headline[2]}</em>
-                </motion.span>
-              </span>
-            </h1>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: EASE, delay: 0.6 }}
-              className="relative shrink-0 border-l border-accent/40 pl-6"
-            >
-              <div className="font-display text-7xl leading-none text-gold md:text-8xl">{t.hero.statNumber}</div>
-              <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.25em] text-paper/80">{t.hero.statLabel}</div>
-              <div className="mt-1 font-display text-base italic text-muted">{t.hero.statSub}</div>
-            </motion.div>
           </div>
 
-          <div className="mt-14 grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: EASE, delay: 0.5 }}
-              className="max-w-xl text-base leading-relaxed text-muted md:text-lg"
-            >
-              {t.hero.description}
-            </motion.p>
+          <h1 className="mt-6">
+            <span className="hero-rise flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-paper md:text-3xl" style={{ animationDelay: '0.05s' }}>
+              Jad Falaq
+              <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+            </span>
+            <span className="mt-4 block font-display text-[2.75rem] leading-[0.95] tracking-[-0.02em] sm:text-6xl md:text-7xl lg:text-[7.25rem]">
+              <span className="block overflow-hidden">
+                <span className="hero-line block" style={{ animationDelay: '0.1s' }}>
+                  {t.hero.headline[0]}
+                </span>
+              </span>
+              <span className="block overflow-hidden pb-2">
+                <span className="hero-line block" style={{ animationDelay: '0.22s' }}>
+                  {t.hero.headline[1]} <em className="text-gold pr-2">{t.hero.headline[2]}</em>
+                </span>
+              </span>
+            </span>
+          </h1>
+          <p className="hero-rise mt-5 max-w-2xl text-base font-medium text-paper/85 md:text-lg" style={{ animationDelay: '0.3s' }}>
+            {t.hero.role}
+          </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: EASE, delay: 0.65 }}
-              className="flex flex-wrap gap-3"
-            >
-              <a
-                href="#projects"
-                className="btn-gold flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold tracking-wide shadow-[0_10px_40px_-10px_rgb(var(--accent)_/_0.6)] transition-transform hover:-translate-y-0.5"
-              >
-                {t.hero.ctaProjects}
-                <ArrowUpRight size={16} />
-              </a>
-              <a
-                href="#cv"
-                className="flex items-center gap-2 rounded-full border border-paper/20 px-7 py-3.5 text-sm tracking-wide text-paper transition-all hover:border-accent hover:text-accent"
-              >
-                <Download size={15} />
-                {t.hero.ctaCV}
-              </a>
-            </motion.div>
+          <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-16">
+            <div className="hero-rise" style={{ animationDelay: '0.4s' }}>
+              <p className="max-w-xl text-base leading-relaxed text-muted md:text-lg">{t.hero.description}</p>
+              <p className="mt-4 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/70">
+                <Briefcase size={13} className="shrink-0 text-accent" aria-hidden="true" />
+                {t.hero.credibility}
+              </p>
+
+              <ul className="mt-6 flex flex-wrap gap-2">
+                {t.hero.availability.map((item, i) => (
+                  <li
+                    key={item}
+                    className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/[0.06] px-3.5 py-1.5 text-xs text-paper/90"
+                  >
+                    {i === 0 && (
+                      <span className="relative flex h-2 w-2" aria-hidden="true">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+                      </span>
+                    )}
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <a
+                  href="#projects"
+                  className="btn-gold flex min-h-[48px] items-center justify-center gap-2 rounded-full px-7 text-sm font-semibold tracking-wide shadow-[0_10px_40px_-10px_rgb(var(--accent)_/_0.6)] transition-transform hover:-translate-y-0.5"
+                >
+                  {t.hero.ctaProjects}
+                  <ArrowDown size={16} aria-hidden="true" />
+                </a>
+                <a
+                  href={p.cvFile}
+                  download
+                  aria-label={`${t.hero.ctaCV} — ${p.title} (PDF)`}
+                  className="flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-paper/25 px-7 text-sm tracking-wide text-paper transition-all hover:border-accent hover:text-accent"
+                >
+                  <Download size={15} aria-hidden="true" />
+                  {t.hero.ctaCV}
+                </a>
+                <a
+                  href="#contact"
+                  className="flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-sm tracking-wide text-paper/85 underline-offset-4 transition-colors hover:text-accent hover:underline"
+                >
+                  <Mail size={15} aria-hidden="true" />
+                  {t.hero.ctaContact}
+                </a>
+              </div>
+            </div>
+
+            {/* Profile selector — the "three profiles" promise, made interactive */}
+            <div className="hero-rise border-l border-accent/40 pl-5 md:pl-6" style={{ animationDelay: '0.55s' }}>
+              <div className="flex items-end gap-4">
+                <span className="font-display text-6xl leading-none text-gold md:text-7xl">{t.hero.statNumber}</span>
+                <span className="pb-1">
+                  <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-paper/80">{t.hero.statLabel}</span>
+                  <span className="mt-1 block font-display text-base italic text-muted">{t.hero.statSub}</span>
+                </span>
+              </div>
+              <div role="group" aria-label={t.hero.selectorLabel} className="mt-6 grid grid-cols-3 gap-2 lg:grid-cols-1">
+                {PROFILE_IDS.map((id, index) => {
+                  const active = profile === id
+                  const color = PROFILE_COLORS[id]
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => selectProfile(id)}
+                      className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-[12px] leading-tight transition-all duration-300 sm:text-[13px] lg:flex-row lg:justify-start lg:gap-3 lg:px-4 lg:text-left lg:text-sm ${
+                        active ? 'font-semibold' : 'border-line text-paper/75 hover:border-paper/25 hover:text-paper'
+                      }`}
+                      style={active ? { color, borderColor: `${color}99`, backgroundColor: `${color}1A` } : undefined}
+                    >
+                      <span className="font-display text-lg italic leading-none" style={{ color, opacity: active ? 1 : 0.7 }} aria-hidden="true">
+                        {ROMAN[index]}
+                      </span>
+                      <span className="lg:hidden">{t.profiles[id].navLabel}</span>
+                      <span className="hidden flex-1 lg:inline">{t.profiles[id].title}</span>
+                      {active && <Check size={15} className="hidden shrink-0 lg:block" aria-hidden="true" />}
+                    </button>
+                  )
+                })}
+              </div>
+              <p aria-live="polite" className="mt-4 min-h-[4.5rem] text-sm leading-relaxed text-muted">
+                <span className="text-paper">{p.title}</span> — {p.pickerDescription}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Scroll cue */}
-        <motion.a
+        <a
           href="#profiles"
           aria-label="Scroll"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 1 }}
-          className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 md:block"
+          className="hero-rise absolute bottom-6 left-1/2 hidden -translate-x-1/2 lg:block"
+          style={{ animationDelay: '1.1s' }}
         >
-          <span className="relative block h-14 w-px overflow-hidden bg-line">
+          <span className="relative block h-12 w-px overflow-hidden bg-line">
             <motion.span
               className="absolute left-0 top-0 h-5 w-px bg-accent"
-              animate={{ y: [-20, 56] }}
+              animate={{ y: [-20, 48] }}
               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
             />
           </span>
-        </motion.a>
+        </a>
       </section>
 
       {/* ---------------------------------------------------------------- */}
@@ -712,44 +784,76 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       <section id="projects" className="border-t border-line py-24 md:py-36">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
-          <motion.div {...fadeUp} className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div>
-              <Eyebrow>{t.projectsSection.eyebrow}</Eyebrow>
-              <h2 className="mt-6 font-display text-5xl leading-[1] sm:text-6xl md:text-7xl">
-                {t.projectsSection.heading[0]} <em className="text-gold pr-1">{t.projectsSection.heading[1]}</em>
-              </h2>
-              <p className="mt-5 max-w-md text-sm leading-relaxed text-muted">{t.projectsSection.description}</p>
-            </div>
-            <button
-              onClick={() => setShowAllProjects((v) => !v)}
-              className="group flex w-fit items-center gap-3 rounded-full border border-line px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-paper transition-colors hover:border-accent hover:text-accent"
-            >
-              {showAllProjects ? t.projectsSection.viewLessLabel : t.projectsSection.viewAllLabel}
-              <ArrowUpRight size={13} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </button>
+          <motion.div {...fadeUp}>
+            <Eyebrow>{t.projectsSection.eyebrow}</Eyebrow>
+            <h2 className="mt-6 font-display text-5xl leading-[1] sm:text-6xl md:text-7xl">
+              {t.projectsSection.heading[0]} <em className="text-gold pr-1">{t.projectsSection.heading[1]}</em>
+            </h2>
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted">
+              <span className="text-paper">{p.title}</span> — {t.projectsSection.description}
+            </p>
           </motion.div>
 
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              key={profile + '-projects-' + showAllProjects}
+              key={profile + '-featured'}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="mt-16 grid gap-px overflow-hidden border border-line bg-line"
+              transition={{ duration: 0.3 }}
+              className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
             >
-              {visibleProjects.map((project, index) => (
-                <ProjectCard
+              {featuredProjects.map((project, index) => (
+                <FeaturedProjectCard
                   key={project.id}
                   project={project}
                   index={index}
                   codeLabel={t.projectsSection.codeLabel}
                   demoLabel={t.projectsSection.demoLabel}
-                  noLinkLabel={t.projectsSection.noLinkLabel}
+                  detailsLabel={t.projectsSection.detailsLabel}
                 />
               ))}
             </motion.div>
           </AnimatePresence>
+
+          <div className="mt-12 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowAllProjects((v) => !v)}
+              aria-expanded={showAllProjects}
+              aria-controls="all-projects"
+              className="group flex min-h-[44px] items-center gap-3 rounded-full border border-line px-6 font-mono text-[11px] uppercase tracking-[0.2em] text-paper transition-colors hover:border-accent hover:text-accent"
+            >
+              {showAllProjects ? t.projectsSection.viewLessLabel : `${t.projectsSection.viewAllLabel} (${otherProjects.length + featuredProjects.length})`}
+              <ArrowDown
+                size={13}
+                aria-hidden="true"
+                className={`transition-transform duration-300 ${showAllProjects ? 'rotate-180' : ''}`}
+              />
+            </button>
+          </div>
+
+          <div id="all-projects">
+            {showAllProjects && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className="mt-14">
+                <h3 className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted">
+                  {t.projectsSection.allHeading} · {otherProjects.length}
+                </h3>
+                <div className="mt-6 grid gap-px overflow-hidden border border-line bg-line">
+                  {otherProjects.map((project, index) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      index={index + featuredProjects.length}
+                      codeLabel={t.projectsSection.codeLabel}
+                      demoLabel={t.projectsSection.demoLabel}
+                      noLinkLabel={t.projectsSection.noLinkLabel}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -848,7 +952,7 @@ export default function Portfolio() {
               ))}
 
               <h3 className="flex items-center gap-2 pt-6 font-mono text-[10px] uppercase tracking-[0.25em] text-accentDeep">
-                <Award size={13} /> {t.projectsSection.heading.join(' ')}
+                <Award size={13} /> {t.nav.projects}
               </h3>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -1012,5 +1116,6 @@ export default function Portfolio() {
         </p>
       </footer>
     </div>
+    </MotionConfig>
   )
 }

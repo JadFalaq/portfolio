@@ -26,9 +26,11 @@ const sans = Manrope({
   display: 'swap',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jadfalaq.vercel.app'
-const title = 'Jad Falaq — Data & AI Engineer'
-const description = 'Portfolio of Jad Falaq, final-year AI engineering student at ENSIAS. Three lenses on the same engineering foundation: Data & AI Engineering, Generative AI, and Machine Learning / MLOps.'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jadfalaq.online'
+// Vercel preview deployments must not be indexed (VERCEL_ENV is set by Vercel at build time).
+const isPreview = process.env.VERCEL_ENV === 'preview'
+const title = 'Jad Falaq | Data & AI Engineer — GenAI & MLOps'
+const description = "Portfolio de Jad Falaq, élève-ingénieur à l'ENSIAS. Projets en Data Engineering, IA générative, Machine Learning et MLOps. Stage PFE de 6 mois dès janvier 2027."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -36,7 +38,8 @@ export const metadata: Metadata = {
   description,
   keywords: 'Data Engineer, AI Engineer, Machine Learning Engineer, Generative AI, RAG, LLM, MLOps, Computer Vision, Portfolio, Jad Falaq, ENSIAS',
   authors: [{ name: 'Jad Falaq' }],
-  robots: { index: true, follow: true },
+  robots: isPreview ? { index: false, follow: false } : { index: true, follow: true },
+  alternates: { canonical: '/' },
   openGraph: {
     title,
     description,
@@ -44,6 +47,7 @@ export const metadata: Metadata = {
     siteName: 'Jad Falaq Portfolio',
     images: [{ url: '/profil.jpg', width: 400, height: 400, alt: 'Jad Falaq' }],
     locale: 'fr_FR',
+    alternateLocale: ['en_US'],
     type: 'website',
   },
   twitter: {
@@ -66,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className={`scroll-smooth ${display.variable} ${mono.variable} ${sans.variable}`}>
+    <html lang="fr" className={`motion-safe:scroll-smooth ${display.variable} ${mono.variable} ${sans.variable}`}>
       <body className="font-sans">
         <LanguageProvider>
           <ProfileProvider>{children}</ProfileProvider>
