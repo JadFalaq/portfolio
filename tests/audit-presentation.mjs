@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import { chromium } from 'playwright-core'
 
 const base = process.env.BASE || 'http://localhost:3100'
@@ -18,17 +19,38 @@ try {
         await viewer.scrollIntoViewIfNeeded()
         const previous = viewer.getByRole('button', { name: /Page précédente|Previous page/ })
         const next = viewer.getByRole('button', { name: /Page suivante|Next page/ })
+        const checkSlide = async (number) => {
+          const filename = `page-${String(number).padStart(2, '0')}.webp`
+          await viewer.locator('img').evaluate((image) => image.decode())
+          const image = await viewer.locator('img').evaluate((element) => ({
+            src: element.currentSrc,
+            width: element.naturalWidth,
+            height: element.naturalHeight,
+          }))
+          assert.equal(new URL(image.src).pathname, `/audit-presentation/${filename}`)
+          assert.equal(image.width, 1440)
+          assert.equal(image.height, 810)
+          const actual = await page.evaluate(async (src) => Array.from(new Uint8Array(await (await fetch(src)).arrayBuffer())), image.src)
+          const expected = await readFile(new URL(`../public/audit-presentation/${filename}`, import.meta.url))
+          assert.deepEqual(Buffer.from(actual), expected)
+          return viewer.locator('img').screenshot()
+        }
+        const firstSlide = await checkSlide(1)
         assert(await previous.isDisabled())
         await next.click()
         assert.match(await viewer.locator('img').getAttribute('alt'), /2 \/ 28/)
+        assert.notDeepEqual(await checkSlide(2), firstSlide, 'The rendered preview must change, not just the counter')
         await next.press('ArrowRight')
         assert.match(await viewer.locator('img').getAttribute('alt'), /3 \/ 28/)
+        await checkSlide(3)
         await previous.click()
+        await checkSlide(2)
         assert.match(await viewer.locator('a').first().getAttribute('href'), /#page=2$/)
         if (route !== '/') {
           for (let i = 2; i < 28; i++) await next.click()
           assert(await next.isDisabled())
           assert.match(await viewer.locator('img').getAttribute('alt'), /28 \/ 28/)
+          await checkSlide(28)
         }
         await viewer.locator('img').evaluate((image) => Promise.race([image.decode(), new Promise((_, reject) => setTimeout(() => reject(new Error('Slide failed to load')), 15000))]))
         assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))

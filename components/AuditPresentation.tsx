@@ -33,6 +33,7 @@ export default function AuditPresentation({ compact = false }: { compact?: boole
         className="relative block aspect-video bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:-outline-offset-2"
       >
         <Image
+          key={page}
           src={`/audit-presentation/page-${String(page).padStart(2, '0')}.webp`}
           alt={`${title} — ${fr ? 'diapositive' : 'slide'} ${page} / ${akwaPresentation.pages}`}
           fill
