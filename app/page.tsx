@@ -9,7 +9,6 @@ import {
   ArrowDown,
   Download,
   Mail,
-  MapPin,
   Github,
   Linkedin,
   Loader2,
@@ -433,7 +432,6 @@ export default function Portfolio() {
                 <span className="mt-[0.45em] h-2 w-2 shrink-0 rounded-full bg-accent shadow-[0_0_0_3px_rgb(var(--accent)_/_0.18)]" aria-hidden="true" />
                 {t.hero.seeking}
               </p>
-              <p className="mt-1.5 pl-[18px] text-sm text-paper/70">{t.hero.location}</p>
             </div>
 
             <p className="mt-5 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/75">
@@ -594,9 +592,6 @@ export default function Portfolio() {
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
               </div>
             </div>
-            <p className="mt-9 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-muted">
-              <MapPin size={12} className="text-accent" /> {t.bio.location}
-            </p>
           </motion.div>
 
           <div>
@@ -674,9 +669,6 @@ export default function Portfolio() {
                     <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted md:pr-10 md:pt-7 md:text-right">
                       <p className="flex items-center gap-1.5 text-paper md:justify-end">
                         <Calendar size={12} className="text-accent" /> {exp.period}
-                      </p>
-                      <p className="mt-2 flex items-center gap-1.5 md:justify-end">
-                        <MapPin size={12} /> {exp.location}
                       </p>
                     </div>
 
@@ -784,7 +776,7 @@ export default function Portfolio() {
                 <h3 className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted">
                   {t.projectsSection.allHeading} · {otherProjects.length}
                 </h3>
-                <div className="mt-6 grid gap-px overflow-hidden border border-line bg-line">
+                <div className="mt-6 grid gap-5 md:grid-cols-2">
                   {otherProjects.map((project, index) => (
                     <ProjectCard
                       key={project.id}
@@ -887,8 +879,6 @@ export default function Portfolio() {
                   {contact.phones.map((ph) => (
                     <p key={ph}>{ph}</p>
                   ))}
-                  <p>{t.bio.location}</p>
-                  <p>{t.bio.secondLocation}</p>
                   <a href={contact.githubUrl} target="_blank" rel="noopener noreferrer" className="block underline-offset-4 hover:text-accentDeep hover:underline">
                     {contact.github}
                   </a>
@@ -952,7 +942,6 @@ export default function Portfolio() {
                     </div>
                     <div className="shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk md:text-right">
                       <p>{edu.period}</p>
-                      <p className="mt-1">{edu.location}</p>
                     </div>
                   </div>
                   <p className="mt-4 text-sm leading-relaxed text-mutedInk">{edu.details}</p>

@@ -199,7 +199,7 @@ export default function CaseStudyTemplate({ project, data }: { project: Project;
             <div className="mt-8">
               <h3 className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent">{lab('contributions')}</h3>
               <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                {experience.company} · {experience.period} · {experience.location}
+                {experience.company} · {experience.period}
               </p>
               <ul className="mt-4 max-w-3xl space-y-3">
                 {experience.description.map((item, i) => (

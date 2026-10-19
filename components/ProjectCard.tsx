@@ -23,13 +23,13 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
 
   const CardInner = (
     <>
-      <div className="relative aspect-[16/10] overflow-hidden bg-surface md:aspect-auto md:h-full md:min-h-[22rem]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-surface">
         {project.image ? (
           <Image
             src={project.image}
             alt={project.title}
             fill
-            className="card-media object-cover opacity-85"
+            className="card-media object-contain p-3"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         ) : visual ? (
@@ -51,14 +51,14 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
         <span className="absolute right-5 top-5 font-mono text-[10px] tracking-[0.2em] text-paper/60">{project.year}</span>
       </div>
 
-      <div className="relative flex flex-col justify-center px-6 pb-6 pt-2 md:px-12 md:py-10">
+      <div className="relative flex flex-col justify-center flex-1 px-6 pb-6 pt-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">{project.status}</p>
-        <h3 className="mt-3 font-display text-2xl leading-tight text-paper md:text-[2.1rem]">
+        <h3 className="mt-3 font-display text-2xl leading-tight text-paper md:text-[1.65rem]">
           {project.title}
         </h3>
-        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted md:text-[15px]">{project.description}</p>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted md:text-[15px]">{project.problem ?? project.description}</p>
 
-        <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1.5">
+        <div className="mb-6 mt-5 flex flex-wrap gap-x-4 gap-y-1.5">
           {project.technologies.map((tech) => (
             <span key={tech} className="font-mono text-[11px] text-paper/50">
               {tech}
@@ -67,7 +67,7 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
         </div>
 
         {/* Links sit above the stretched case-study link so each stays clickable on its own. */}
-        <div className="relative z-10 mt-6 flex flex-wrap items-center gap-2 border-t border-line pt-4">
+        <div className="relative z-10 mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-4">
           {caseHref && (
             <span className="mr-auto inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-paper transition-colors duration-200 group-hover:text-accent">
               {caseStudyLabel}
@@ -102,7 +102,7 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
   )
 
   const className =
-    'card-lift card-flat group relative block h-full overflow-hidden bg-ink hover:bg-surface focus-within:bg-surface md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]'
+    'card-lift group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface/40 transition-colors hover:border-accent/50 focus-within:border-accent/50'
 
   return (
     <motion.div

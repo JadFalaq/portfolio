@@ -132,7 +132,7 @@ function GenericCaseStudy({ slug }: { slug: string }) {
           {experience && (
             <Block label={l.contributionsLabel}>
               <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted">
-                {experience.company} · {experience.period} · {experience.location}
+                {experience.company} · {experience.period}
               </p>
               <ul className="mt-5 max-w-2xl space-y-4">
                 {experience.description.map((item, i) => (

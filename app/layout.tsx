@@ -24,7 +24,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.jadfalaq.online
 // Vercel preview deployments must not be indexed (VERCEL_ENV is set by Vercel at build time).
 const isPreview = process.env.VERCEL_ENV === 'preview'
 const title = 'Jad Falaq | Data & AI Engineer — GenAI & MLOps'
-const description = "Portfolio de Jad Falaq, élève-ingénieur à l'ENSIAS. Projets en Data Engineering, IA générative, Machine Learning et MLOps. Stage PFE de 6 mois dès janvier 2027."
+const description = "Portfolio de Jad Falaq, élève-ingénieur à l'ENSIAS. Projets en Data Engineering, IA générative, Machine Learning et MLOps. À la recherche d’un stage PFE."
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

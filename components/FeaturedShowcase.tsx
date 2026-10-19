@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
@@ -21,75 +20,27 @@ interface FeaturedShowcaseProps {
   }
 }
 
-// Editorial index: the three featured projects as numbered rows (all content always
-// visible), plus — on large screens — a sticky preview of the row being hovered or focused.
+// Each project keeps its visual, evidence and links together at every viewport size.
 export default function FeaturedShowcase({ projects, diagrams, labels }: FeaturedShowcaseProps) {
-  const [active, setActive] = useState(0)
-  const current = projects[active] ?? projects[0]
-
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:gap-14">
-      <ol className="border-t border-line">
-        {projects.map((project, index) => (
-          <li key={project.id}>
-            <Row
-              project={project}
-              index={index}
-              active={index === active}
-              onActivate={() => setActive(index)}
-              diagrams={diagrams}
-              labels={labels}
-            />
-          </li>
-        ))}
-      </ol>
-
-      {/* Decorative preview: the same information is in the rows, so it is hidden from AT. */}
-      <div className="hidden lg:block" aria-hidden="true">
-        <div className="sticky top-28">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-sm border border-line bg-surface">
-            {projects.map((project, index) => (
-              <div
-                key={project.id}
-                className={`absolute inset-0 transition-[opacity,transform] duration-[250ms] ease-out ${
-                  index === active ? 'scale-100 opacity-100' : 'scale-[1.02] opacity-0'
-                }`}
-              >
-                <Preview project={project} diagrams={diagrams} />
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-            <span>{current.category}</span>
-            <span className="flex gap-1.5">
-              {projects.map((p, i) => (
-                <span
-                  key={p.id}
-                  className={`h-1 rounded-full transition-[width,background-color] duration-[250ms] ease-out ${
-                    i === active ? 'w-6 bg-accent' : 'w-1.5 bg-paper/25'
-                  }`}
-                />
-              ))}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ol className="grid items-stretch gap-5 lg:grid-cols-3">
+      {projects.map((project, index) => (
+        <li key={project.id} className="min-w-0">
+          <Row project={project} index={index} diagrams={diagrams} labels={labels} />
+        </li>
+      ))}
+    </ol>
   )
 }
 
 function Row({
   project,
   index,
-  active,
-  onActivate,
   diagrams,
   labels,
 }: {
   project: Project
   index: number
-  active: boolean
-  onActivate: () => void
   diagrams: FeaturedShowcaseProps['diagrams']
   labels: FeaturedShowcaseProps['labels']
 }) {
@@ -100,46 +51,24 @@ function Row({
 
   return (
     <article
-      onMouseEnter={onActivate}
-      onFocus={onActivate}
-      data-active={active}
-      className="group relative border-b border-line py-8 pl-6 transition-colors duration-[250ms] ease-out data-[active=true]:bg-paper/[0.02] sm:pl-8 md:py-10"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-accent/50 focus-within:border-accent/50 sm:p-6"
     >
-      {/* Accent rail: grows on the active row. */}
-      <span
-        aria-hidden="true"
-        className={`absolute left-0 top-8 w-[2px] rounded-full bg-accent transition-[height,opacity] duration-[250ms] ease-out md:top-10 ${
-          active ? 'h-12 opacity-100' : 'h-4 opacity-40'
-        }`}
-      />
+      <div className="relative mb-6 h-64 overflow-hidden rounded-lg border border-line bg-ink">
+        <Preview project={project} diagrams={diagrams} />
+      </div>
 
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-        <span className={`transition-colors duration-200 ${active ? 'text-accent' : ''}`}>{String(index + 1).padStart(2, '0')}</span>
+        <span className="text-accent">{String(index + 1).padStart(2, '0')}</span>
         <span>{project.category}</span>
         <span aria-hidden="true">·</span>
         <span>{project.year}</span>
       </div>
 
-      <h3
-        className={`mt-3 text-[clamp(1.375rem,2.4vw,1.875rem)] font-semibold leading-tight tracking-[-0.025em] text-paper transition-transform duration-[250ms] ease-out ${
-          active ? 'lg:translate-x-[3px]' : ''
-        }`}
-      >
+      <h3 className="mt-3 text-xl font-semibold leading-tight tracking-[-0.025em] text-paper sm:text-2xl">
         {project.shortTitle ?? project.title}
         {project.subtitle && <span className="mt-1 block text-[0.7em] font-medium italic tracking-[-0.01em] text-paper/70">{project.subtitle}</span>}
       </h3>
       {project.role && <p className="mt-1.5 text-xs font-medium text-paper/70">{project.role}</p>}
-
-      {/* Small screens: the visual sits in the row (no side preview). */}
-      {project.image ? (
-        <div className="relative mt-5 aspect-[16/9] overflow-hidden rounded-sm border border-line bg-surface lg:hidden">
-          <Preview project={project} diagrams={diagrams} />
-        </div>
-      ) : project.diagram === 'akwa' ? (
-        <div className="mt-5 overflow-hidden rounded-sm border border-line bg-surface lg:hidden">
-          <AkwaPipeline copy={diagrams.akwa} variant="compact" />
-        </div>
-      ) : null}
 
       {project.problem && (
         <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
@@ -163,7 +92,7 @@ function Row({
         <p className="mt-5 font-mono text-[12px] text-paper">{project.metric}</p>
       ) : null}
 
-      <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Technologies">
+      <ul className="mb-6 mt-5 flex flex-wrap gap-1.5" aria-label="Technologies">
         {project.technologies.slice(0, 4).map((tech) => (
           <li key={tech} className="rounded-full border border-line px-2.5 py-1 text-[11px] text-paper/70">
             {tech}
@@ -171,7 +100,7 @@ function Row({
         ))}
       </ul>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
+      <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-5">
         {caseHref && (
           <Link
             href={caseHref}
@@ -200,14 +129,14 @@ function Row({
 // Real visual when there is one; otherwise a typographic panel built from verified data
 // (logo, headline result, stack) — no invented illustration.
 function Preview({ project, diagrams }: { project: Project; diagrams: FeaturedShowcaseProps['diagrams'] }) {
-  if (project.diagram === 'akwa') return <AkwaPipeline copy={diagrams.akwa} />
+  if (project.diagram === 'akwa') return <div className="flex h-full items-center"><AkwaPipeline copy={diagrams.akwa} variant="compact" /></div>
   if (project.image) {
     return (
       <Image
         src={project.image}
         alt=""
         fill
-        sizes="(max-width: 1024px) 100vw, 40vw"
+        sizes="(max-width: 1023px) 90vw, 30vw"
         className="object-contain p-4"
       />
     )
