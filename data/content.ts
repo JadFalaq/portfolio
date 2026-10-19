@@ -1,3 +1,4 @@
+import { dentalPresentation, type ProjectPresentation } from './presentations'
 import type { Language } from '../contexts/LanguageContext'
 import type { ProfileId } from '../contexts/ProfileContext'
 
@@ -6,6 +7,7 @@ export interface ProjectMeta {
   technologies: string[]
   github?: string
   demo?: string
+  presentation?: ProjectPresentation
   image?: string
   /** Company logo, shown contained when there is no screenshot. */
   logo?: string
@@ -263,6 +265,7 @@ const projectMeta: Record<string, ProjectMeta> = {
     github: 'https://github.com/JadFalaq/detection_dentaire_mlops',
     demo: 'https://snani.vercel.app/',
     image: '/Dantal pathologie.png',
+    presentation: dentalPresentation,
     year: '2025',
   },
   pointfed: {
@@ -376,14 +379,18 @@ const projectsFr: Record<string, ProjectText> = {
     status: 'Projet académique',
   },
   dental: {
-    title: 'Détection de pathologies dentaires — MLOps',
-    description: 'Détecteur YOLOv8 de 7 catégories de pathologies dentaires (remappées depuis 14 classes) sur radiographies panoramiques, évalué sur un jeu de validation, de test et un jeu externe. Pipeline MLOps complet : données versionnées avec DVC, expériences suivies dans MLflow, registre de modèles (champion/candidat), API FastAPI conteneurisée et interface React. CI/CD GitHub Actions avec tests pytest et déploiement sur Azure Container Apps et Vercel.',
-    problem: "Détecter 7 catégories de pathologies dentaires sur radiographies panoramiques, avec un modèle versionné, traçable et déployé en continu.",
-    results: [{ value: "0,42", label: "mAP50 sur test (Champion)" }, { value: "0,86 / 0,47", label: "précision / rappel sur test" }, { value: "1 808", label: "radiographies, 7 classes" }],
-    summary: "Détecteur YOLOv8 de 7 catégories de pathologies dentaires sur radiographies panoramiques, industrialisé : données versionnées (DVC), suivi d'expériences et registre de modèles (MLflow), API FastAPI conteneurisée, CI/CD et déploiement continu sur Azure.",
-    metric: "mAP50 0,42 (test) · précision 0,86 / rappel 0,47",
+    title: 'Snani — Comprendre sa radio dentaire',
+    shortTitle: 'Snani',
+    subtitle: 'Détection dentaire & MLOps',
+    role: 'Projet académique · Computer Vision, MLOps & expérience utilisateur',
+    description: "Une application en français et en arabe qui aide les personnes non techniques à comprendre leur radio panoramique : zones repérées sur l’image, explications simples et image annotée à partager avec leur dentiste. En coulisses : YOLOv8s, données versionnées avec DVC, expériences MLflow, API FastAPI conteneurisée et CI/CD vers Azure Container Apps et Vercel.",
+    problem: "Transformer un détecteur de signes dentaires en un service reproductible et une interface compréhensible sans connaissances médicales ou techniques.",
+    businessValue: "De la radio aux explications : Snani rend les résultats lisibles et partageables pour préparer l’échange avec un dentiste.",
+    results: [{ value: '0,422', label: 'mAP50 sur test · modèle Champion' }, { value: '86 %', label: 'précision sur test' }, { value: '46,7 %', label: 'rappel sur test' }],
+    summary: "Un pipeline MLOps de bout en bout et une application accessible : 1 808 radiographies, 7 familles de signes, YOLOv8s, DVC, MLflow, FastAPI, Docker et Snani en français/arabe.",
+    metric: 'mAP50 0,422 · précision 0,860 · rappel 0,467 (test)',
     category: 'Computer Vision & MLOps',
-    status: 'Déployé en continu',
+    status: 'Démo publique · projet académique',
   },
   pointfed: {
     title: 'PointFed3D — Apprentissage fédéré sur nuages de points 3D',
@@ -497,14 +504,18 @@ const projectsEn: Record<string, ProjectText> = {
     status: 'Academic project',
   },
   dental: {
-    title: 'Dental Pathology Detection — MLOps',
-    description: 'YOLOv8 detector for 7 dental pathology categories (remapped from 14 classes) on panoramic radiographs, evaluated on validation, test and external splits. Full MLOps pipeline: data versioned with DVC, experiments tracked in MLflow, model registry (champion/candidate), containerized FastAPI service and React front end. GitHub Actions CI/CD with pytest and deployment to Azure Container Apps and Vercel.',
-    problem: "Detect 7 dental pathology categories on panoramic X-rays, with a versioned, traceable and continuously deployed model.",
-    results: [{ value: "0.42", label: "test mAP50 (Champion)" }, { value: "0.86 / 0.47", label: "test precision / recall" }, { value: "1,808", label: "X-rays, 7 classes" }],
-    summary: "YOLOv8 detector for 7 dental pathology categories on panoramic X-rays, industrialized: versioned data (DVC), experiment tracking and model registry (MLflow), containerized FastAPI service, CI/CD and continuous deployment on Azure.",
-    metric: "mAP50 0.42 (test) · precision 0.86 / recall 0.47",
+    title: 'Snani — Understanding your dental X-ray',
+    shortTitle: 'Snani',
+    subtitle: 'Dental detection & MLOps',
+    role: 'Academic project · Computer Vision, MLOps & user experience',
+    description: 'A French and Arabic application that helps non-technical users understand panoramic dental X-rays: highlighted findings, plain-language explanations and an annotated image to share with a dentist. Behind it: YOLOv8s, DVC-versioned data, MLflow experiments, a containerised FastAPI API and CI/CD to Azure Container Apps and Vercel.',
+    problem: 'Turn a dental finding detector into a reproducible service and an interface that requires no medical or technical knowledge.',
+    businessValue: 'From X-rays to explanations: Snani makes results understandable and shareable to support a conversation with a dentist.',
+    results: [{ value: '0.422', label: 'test mAP50 · Champion model' }, { value: '86%', label: 'test precision' }, { value: '46.7%', label: 'test recall' }],
+    summary: 'An end-to-end MLOps pipeline and an accessible application: 1,808 X-rays, 7 finding categories, YOLOv8s, DVC, MLflow, FastAPI, Docker and Snani in French/Arabic.',
+    metric: 'mAP50 0.422 · precision 0.860 · recall 0.467 (test)',
     category: 'Computer Vision & MLOps',
-    status: 'Continuously deployed',
+    status: 'Public demo · academic project',
   },
   pointfed: {
     title: 'PointFed3D — Federated Learning on 3D Point Clouds',

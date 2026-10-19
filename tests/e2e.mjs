@@ -15,7 +15,7 @@ const ok = (name, pass, info = '') => {
 const EXPECT = {
   'data-ai': { cv: '/CV_Jad_Falaq_DataAI_FR.pdf', featured: ['Audit Intelligent', 'Renault Digital', "Pipeline automatisé"] },
   genai: { cv: '/CV_Jad_Falaq_GenAI_FR.pdf', featured: ['Renault Digital', 'cvmatch', 'Stratégies RAG'] },
-  mlops: { cv: '/CV_Jad_Falaq_MLOps_FR.pdf', featured: ['Détection de pathologies dentaires', 'Audit Intelligent', 'désinformation médicale'] },
+  mlops: { cv: '/CV_Jad_Falaq_MLOps_FR.pdf', featured: ['Snani', 'Audit Intelligent', 'désinformation médicale'] },
 }
 const LABELS = { 'data-ai': 0, genai: 1, mlops: 2 }
 

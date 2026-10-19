@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
 import type { Project } from '../data/content'
 import AuditPresentation from './AuditPresentation'
+import PresentationViewer from './PresentationViewer'
 
 interface ProjectCardProps {
   project: Project
@@ -24,7 +25,9 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
 
   const CardInner = (
     <>
-      {project.diagram === 'akwa' ? (
+      {project.presentation ? (
+        <div className="relative z-10 p-3"><PresentationViewer key={project.id} presentation={project.presentation} compact /></div>
+      ) : project.diagram === 'akwa' ? (
         <div className="relative z-10 p-3"><AuditPresentation compact /></div>
       ) : (
       <div className="relative aspect-[16/10] overflow-hidden bg-surface">

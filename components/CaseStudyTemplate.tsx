@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import PresentationViewer from './PresentationViewer'
 import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, Check, CircleDashed, Github, Languages as LanguagesIcon } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -147,7 +148,15 @@ export default function CaseStudyTemplate({ project, data }: { project: Project;
             <p className="mt-6 max-w-2xl rounded-sm border border-line bg-surface/50 px-4 py-3 text-sm italic text-muted">{t.caseStudy.confidentialNote}</p>
           )}
 
-          {project.image && (
+          {project.presentation ? (
+            <section id="presentation" className="mt-10 scroll-mt-24">
+              <h2 className="mb-4 text-xl font-semibold">{project.presentation.title[language]}</h2>
+              <PresentationViewer key={project.id} presentation={project.presentation} />
+              <a href={project.presentation.href} download className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm text-accent hover:underline">
+                {language === 'fr' ? 'Télécharger la présentation PDF' : 'Download the PDF presentation'}
+              </a>
+            </section>
+          ) : project.image && (
             <div className="mt-10 overflow-hidden rounded-sm border border-line bg-surface">
               <Image
                 src={project.image}
@@ -269,7 +278,7 @@ export default function CaseStudyTemplate({ project, data }: { project: Project;
                   </thead>
                   <tbody>
                     {data.results.table.rows.map((row) => (
-                      <tr key={row[0]} className="border-b border-line last:border-b-0">
+                      <tr key={row.join('|')} className="border-b border-line last:border-b-0">
                         {row.map((cell, i) =>
                           i === 0 ? (
                             <th key={i} scope="row" className="px-4 py-3 font-medium text-paper">

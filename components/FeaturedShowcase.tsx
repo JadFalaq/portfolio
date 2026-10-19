@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
 import type { Project } from '../data/content'
 import type { AkwaCopy } from '../data/akwa'
 import AuditPresentation from './AuditPresentation'
+import PresentationViewer from './PresentationViewer'
 
 interface FeaturedShowcaseProps {
   projects: Project[]
@@ -53,7 +54,9 @@ function Row({
     <article
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-accent/50 focus-within:border-accent/50 sm:p-6"
     >
-      {project.diagram === 'akwa' ? (
+      {project.presentation ? (
+        <div className="mb-6"><PresentationViewer key={project.id} presentation={project.presentation} compact /></div>
+      ) : project.diagram === 'akwa' ? (
         <div className="mb-6"><AuditPresentation compact /></div>
       ) : (
         <div className="relative mb-6 h-64 overflow-hidden rounded-lg border border-line bg-ink">

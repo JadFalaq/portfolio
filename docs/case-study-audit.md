@@ -67,16 +67,34 @@ DAG `exercise2_books_ingestion.py` (retries=2, manual trigger, dynamic mapping `
   project report without protocol. Academic exercise ("Exercise 2").
 
 ## 6. Snani — dental MLOps
-`docs/{dataset,experiments,registry,deployment}.md`, `configs/model_registry.yaml`,
-`.github/workflows/cd-service.yml` (unit tests → Docker build → integration tests on the container
-→ publish ghcr.io), `dvc.yaml`, deck slides 7 & 11 (Table 4.2).
-- Data: 1,808 radiographs, 24,888 annotations, 14→7 classes; train 1,375 / eval 153 / external 180
-  (test = 100 by difference).
-- **Table 4.2 (Champion = baseline)**: eval P 0.695 R 0.393 mAP50 0.325; test P 0.860 R 0.467
-  mAP50 0.422 mAP50-95 0.211; external P 0.682 R 0.383 mAP50 0.325.
-- **Corrected**: the card showed "86 % precision" alone (test-split precision only). Now shown with
-  recall and mAP50 per split. The deck itself calls performance "modest"; no clinical validation.
-- Deployment documented: Vercel frontend + ACA API (0–1 replica), security hardening listed.
+Re-reviewed at `9fb9487b42017c3d008c8fbd4e532e4e03de5df2` using GitHub tree and
+individual raw files. The full clone was stopped after a slow transfer; no application
+or inference was run from the external repository.
+
+- Owner-provided presentation: `Industrialisation d'un Système de Détection de Pathologies Dentaires — Approche MLOps.pdf`,
+  24 physical PDF pages. Metrics were read visually from embedded Table 4.2 on **PDF page 14**
+  (printed slide number 11); page 15 shows the registry. Page 19 reports Docker size and test counts.
+- Data: 1,808 X-rays, 24,888 annotations, 3 invalid annotations removed, 14→7 classes.
+  The 7 classes include treatments/devices, not just diseases. No claim that remapping balances classes.
+- Champion baseline: eval P .695 R .393 mAP50 .325 mAP50–95 .136;
+  test .860 / .467 / .422 / .211; external .682 / .383 / .325 / .146.
+- Candidate: eval .689 / .368 / .313 / .138; test .894 / .441 / .407 / .199;
+  external .757 / .383 / .332 / .160. These are experiment scores, not clinical accuracy.
+- `configs/model_registry.yaml`: confirms Champion baseline, Candidate external-generalization
+  and Archived small-lesions variants. `configs/train.yaml` currently describes the small-lesions
+  experiment with additional augmentations; do not claim all experiments use only horizontal flips.
+- `docs/deployment.md` + `.github/workflows/cd-service.yml`: current Azure Container Apps API
+  (0–1 replica), Vercel frontend, GHCR image; Azure automatic deployment requires configured credentials.
+  The PDF still shows the older Railway hosting and a production verification job now removed.
+- Docker sizes 3.74 → 1.19 GB and 11+5 tests are explicitly attributed to the presentation,
+  not presented as a new benchmark or current collected test count.
+- `frontend/src/i18n/fr.js`, `components/ResultsPanel.jsx`, `report.js`: French/Arabic,
+  upload/example/camera, plain-language findings, confidence, annotated-image download and sharing.
+- Public demo HTML fetched successfully (title, description, French/Arabic metadata).
+  A browser navigation waiting for network idle timed out; no patient X-ray was submitted and
+  no claim of successful live inference is made. Backend cold-start range 30–60 s comes from deployment docs.
+- PDF claim “<5s” not used as a latency metric. No clinical validation claimed.
+- Presentation viewer uses 24 pre-rendered WebP pages, retaining the original PDF for opening/download.
 
 ## 7. AraBERT misinformation
 `models/final_report.txt`, `improvements/COMPARATIVE_REPORT.md`, `baseline_report.txt`,
