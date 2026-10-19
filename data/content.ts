@@ -43,6 +43,8 @@ export interface EducationEntry {
   period: string
   location: string
   details: string
+  /** `zoom` enlarges a logo that sits in the middle of a photo. */
+  logo?: { src: string; width: number; height: number; zoom?: number }
 }
 
 export interface SkillGroup {
@@ -165,6 +167,11 @@ const contactInfo = {
   githubUrl: 'https://github.com/JadFalaq',
   linkedin: 'linkedin.com/in/jadfalaq',
   linkedinUrl: 'https://www.linkedin.com/in/jadfalaq',
+}
+
+const schoolLogos = {
+  ensias: { src: '/ensias_logo.jpeg', width: 2390, height: 1792, zoom: 1.7 },
+  cpge: { src: '/cpge_mohamed_v_casablanca_logo.jpeg', width: 200, height: 200 },
 }
 
 // Internship periods, defined once so every profile shows the same dates.
@@ -569,6 +576,7 @@ const fr: SiteContent = {
       school: 'ENSIAS — École Nationale Supérieure d\'Informatique et d\'Analyse des Systèmes',
       period: 'Septembre 2024 — Juin 2027',
       location: 'Rabat, Maroc',
+      logo: schoolLogos.ensias,
       details: "Apprentissage automatique et profond (réseaux de neurones, reinforcement learning), apprentissage statistique et probabiliste. Big Data et systèmes distribués, ingénierie des données, séries temporelles, traitement multimédia (texte, image).",
     },
     {
@@ -576,6 +584,7 @@ const fr: SiteContent = {
       school: 'CPGE Mohammed V',
       period: 'Septembre 2022 — Juin 2024',
       location: 'Casablanca, Maroc',
+      logo: schoolLogos.cpge,
       details: "Mathématiques appliquées, sciences de l'ingénieur et programmation Python. Préparation aux concours des grandes écoles d'ingénieurs.",
     },
   ],
@@ -830,6 +839,7 @@ const en: SiteContent = {
       school: "ENSIAS — École Nationale Supérieure d'Informatique et d'Analyse des Systèmes",
       period: 'September 2024 — June 2027',
       location: 'Rabat, Morocco',
+      logo: schoolLogos.ensias,
       details: 'Machine & Deep Learning (neural networks, reinforcement learning), statistical and probabilistic learning. Big Data and distributed systems, data engineering, time series, multimedia processing (text, image).',
     },
     {
@@ -837,6 +847,7 @@ const en: SiteContent = {
       school: 'CPGE Mohammed V',
       period: 'September 2022 — June 2024',
       location: 'Casablanca, Morocco',
+      logo: schoolLogos.cpge,
       details: 'Applied mathematics, engineering sciences and Python programming. Preparation for competitive entrance exams to top engineering schools.',
     },
   ],

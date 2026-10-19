@@ -744,10 +744,11 @@ export default function Portfolio() {
                     </div>
 
                     <div className="md:pl-14">
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
                         {exp.logo ? (
-                          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-accent/30 bg-white">
-                            <Image src={exp.logo} alt={exp.company} fill sizes="48px" className="object-contain p-1.5" />
+                          // Logos are photos with the wordmark centered: a 2:1 cover crop keeps the name large.
+                          <div className="relative aspect-[2/1] w-44 shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent)_/_0.5),0_18px_40px_-12px_rgb(var(--accent)_/_0.45)] transition-transform duration-500 hover:scale-[1.03] md:w-52">
+                            <Image src={exp.logo} alt={exp.company} fill sizes="208px" className="object-cover" />
                           </div>
                         ) : (
                           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-line">
@@ -938,9 +939,25 @@ export default function Portfolio() {
               {t.education.map((edu) => (
                 <div key={edu.degree} className="border border-lineInk bg-white/40 p-7 transition-colors hover:bg-white/70">
                   <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
-                    <div>
+                    <div className="flex flex-col items-start gap-5 sm:flex-row">
+                      {edu.logo && (
+                        // Natural aspect ratio (4:3 and square) so neither logo is cropped.
+                        <div className="shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent-deep)_/_0.45),0_16px_34px_-14px_rgb(var(--accent-deep)_/_0.55)] transition-transform duration-500 hover:scale-[1.03]">
+                          <Image
+                            src={edu.logo.src}
+                            alt={edu.school.split(' — ')[0]}
+                            width={edu.logo.width}
+                            height={edu.logo.height}
+                            sizes="320px"
+                            className="h-24 w-auto md:h-28"
+                            style={edu.logo.zoom ? { transform: `scale(${edu.logo.zoom})` } : undefined}
+                          />
+                        </div>
+                      )}
+                      <div>
                       <h4 className="font-display text-2xl leading-tight">{edu.degree}</h4>
                       <p className="mt-1 text-sm text-mutedInk">{edu.school}</p>
+                      </div>
                     </div>
                     <div className="shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk md:text-right">
                       <p>{edu.period}</p>

@@ -30,8 +30,8 @@ export default function FeaturedProjectCard({ project, index, codeLabel, demoLab
           />
         ) : project.logo ? (
           <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_50%_40%,rgb(var(--accent)_/_0.18),transparent_65%)]">
-            <div className="relative h-24 w-24 overflow-hidden rounded-full border border-accent/30 bg-white">
-              <Image src={project.logo} alt="" fill sizes="96px" className="object-contain p-3" />
+            <div className="relative aspect-[2/1] w-[72%] overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent)_/_0.55),0_20px_45px_-12px_rgb(var(--accent)_/_0.5)] transition-transform duration-700 group-hover:scale-[1.04]">
+              <Image src={project.logo} alt="" fill sizes="(max-width: 768px) 70vw, 25vw" className="object-cover" />
             </div>
           </div>
         ) : (
