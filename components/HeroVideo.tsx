@@ -78,8 +78,8 @@ export default function HeroVideo({ pauseLabel, playLabel }: HeroVideoProps) {
         aria-hidden="true"
         tabIndex={-1}
       >
-        <source src="/hero-intro.webm" type="video/webm" />
         <source src="/hero-intro.mp4" type="video/mp4" />
+        <source src="/hero-intro.webm" type="video/webm" />
       </video>
       <button
         type="button"
