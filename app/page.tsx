@@ -25,7 +25,8 @@ import {
   Check,
 } from 'lucide-react'
 import ProjectCard from '../components/ProjectCard'
-import FeaturedProjectCard from '../components/FeaturedProjectCard'
+import FeaturedShowcase from '../components/FeaturedShowcase'
+import HeroVideo from '../components/HeroVideo'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProfile, PROFILE_IDS, type ProfileId } from '../contexts/ProfileContext'
 import { siteContent, contact } from '../data/content'
@@ -405,91 +406,76 @@ export default function Portfolio() {
           ))}
         </div>
 
-        <div className="relative mx-auto w-full max-w-7xl px-5 md:px-10">
-          <div className="hero-rise">
-            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
+        {/* Mobile order: identity → video → details. Desktop: text left, video right. */}
+        <div className="relative mx-auto grid w-full max-w-7xl gap-x-16 gap-y-10 px-5 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:grid-rows-[auto_1fr] lg:items-start">
+          <div>
+            <div className="hero-rise">
+              <Eyebrow>{t.hero.eyebrow}</Eyebrow>
+            </div>
+            <h1
+              className="hero-rise mt-6 font-display text-[clamp(2.75rem,8vw,6rem)] leading-[0.95] tracking-[-0.045em] text-paper"
+              style={{ animationDelay: '60ms' }}
+            >
+              Jad <em className="text-gold pr-2">Falaq</em>
+            </h1>
+            <p className="hero-rise mt-5 max-w-xl text-lg font-medium leading-snug text-paper/90 md:text-xl" style={{ animationDelay: '140ms' }}>
+              {t.hero.role}
+            </p>
           </div>
 
-          <h1 className="mt-6">
-            <span className="hero-rise flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-paper md:text-3xl" style={{ animationDelay: '40ms' }}>
-              Jad Falaq
-              <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
-            </span>
-            <span className="mt-4 block font-display text-[2.75rem] leading-[0.95] tracking-[-0.02em] sm:text-6xl md:text-7xl lg:text-[7.25rem]">
-              <span className="hero-rise block" style={{ animationDelay: '80ms' }}>
-                {t.hero.headline[0]}
-              </span>
-              <span className="hero-rise block pb-2" style={{ animationDelay: '140ms' }}>
-                {t.hero.headline[1]} <em className="text-gold pr-2">{t.hero.headline[2]}</em>
-              </span>
-            </span>
-          </h1>
-          <p className="hero-rise mt-5 max-w-2xl text-base font-medium text-paper/85 md:text-lg" style={{ animationDelay: '200ms' }}>
-            {t.hero.role}
-          </p>
+          <div className="hero-rise w-full max-w-[15rem] sm:max-w-[20rem] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:max-w-none" style={{ animationDelay: '200ms' }}>
+            <HeroVideo pauseLabel={t.hero.videoPause} playLabel={t.hero.videoPlay} />
+          </div>
 
-          <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-16">
-            <div className="hero-rise" style={{ animationDelay: '250ms' }}>
-              <p className="max-w-xl text-base leading-relaxed text-muted md:text-lg">{t.hero.description}</p>
-              <p className="mt-4 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/70">
-                <Briefcase size={13} className="shrink-0 text-accent" aria-hidden="true" />
-                {t.hero.credibility}
+          <div className="hero-rise lg:col-start-1 lg:row-start-2" style={{ animationDelay: '260ms' }}>
+            <p className="max-w-xl text-base leading-relaxed text-muted md:text-lg">{t.hero.description}</p>
+
+            <div className="mt-6 max-w-xl border-l-2 border-accent pl-4">
+              <p className="flex items-start gap-2.5 text-[15px] font-medium leading-snug text-paper">
+                <span className="mt-[0.45em] h-2 w-2 shrink-0 rounded-full bg-accent shadow-[0_0_0_3px_rgb(var(--accent)_/_0.18)]" aria-hidden="true" />
+                {t.hero.seeking}
               </p>
-
-              <ul className="mt-6 flex flex-wrap gap-2">
-                {t.hero.availability.map((item, i) => (
-                  <li
-                    key={item}
-                    className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/[0.06] px-3.5 py-1.5 text-xs text-paper/90"
-                  >
-                    {i === 0 && (
-                      <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_3px_rgb(var(--accent)_/_0.18)]" aria-hidden="true" />
-                    )}
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <a
-                  href="#projects"
-                  className="btn-gold group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-7 text-sm font-semibold tracking-wide shadow-[0_10px_30px_-12px_rgb(var(--accent)_/_0.55)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_14px_34px_-12px_rgb(var(--accent)_/_0.7)]"
-                >
-                  {t.hero.ctaProjects}
-                  <ArrowDown size={16} aria-hidden="true" className="icon-nudge-down" />
-                </a>
-                <a
-                  href={p.cvFile}
-                  download
-                  aria-label={`${t.hero.ctaCV} — ${p.title} (PDF)`}
-                  className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-paper/25 px-7 text-sm tracking-wide text-paper transition-colors duration-200 ease-out hover:border-accent hover:bg-accent/[0.06] hover:text-accent"
-                >
-                  <Download size={15} aria-hidden="true" className="icon-nudge-down" />
-                  {t.hero.ctaCV}
-                </a>
-                <a
-                  href="#contact"
-                  className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-sm tracking-wide text-paper/85 transition-colors duration-200 ease-out hover:text-accent"
-                >
-                  <Mail size={15} aria-hidden="true" />
-                  <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-200 ease-out group-hover:bg-[length:100%_1px]">
-                    {t.hero.ctaContact}
-                  </span>
-                  <ArrowUpRight size={14} aria-hidden="true" className="icon-nudge-right opacity-60" />
-                </a>
-              </div>
+              <p className="mt-1.5 pl-[18px] text-sm text-muted">{t.hero.location}</p>
             </div>
 
-            {/* Profile selector — the "three profiles" promise, made interactive */}
-            <div className="hero-rise border-l border-accent/40 pl-5 md:pl-6" style={{ animationDelay: '300ms' }}>
-              <div className="flex items-end gap-4">
-                <span className="font-display text-6xl leading-none text-gold md:text-7xl">{t.hero.statNumber}</span>
-                <span className="pb-1">
-                  <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-paper/80">{t.hero.statLabel}</span>
-                  <span className="mt-1 block font-display text-base italic text-muted">{t.hero.statSub}</span>
+            <p className="mt-5 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/70">
+              <Briefcase size={13} className="shrink-0 text-accent" aria-hidden="true" />
+              {t.hero.credibility}
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a
+                href="#projects"
+                className="btn-gold group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-7 text-sm font-semibold tracking-wide shadow-[0_10px_30px_-12px_rgb(var(--accent)_/_0.55)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_14px_34px_-12px_rgb(var(--accent)_/_0.7)]"
+              >
+                {t.hero.ctaProjects}
+                <ArrowDown size={16} aria-hidden="true" className="icon-nudge-down" />
+              </a>
+              <a
+                href={p.cvFile}
+                download
+                aria-label={`${t.hero.ctaCV} — ${p.title} (PDF)`}
+                className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-paper/25 px-7 text-sm tracking-wide text-paper transition-colors duration-200 ease-out hover:border-accent hover:bg-accent/[0.06] hover:text-accent"
+              >
+                <Download size={15} aria-hidden="true" className="icon-nudge-down" />
+                {t.hero.ctaCV}
+              </a>
+              <a
+                href="#contact"
+                className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-sm tracking-wide text-paper/85 transition-colors duration-200 ease-out hover:text-accent"
+              >
+                <Mail size={15} aria-hidden="true" />
+                <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-200 ease-out group-hover:bg-[length:100%_1px]">
+                  {t.hero.ctaContact}
                 </span>
-              </div>
-              <div role="group" aria-label={t.hero.selectorLabel} className="mt-6 grid grid-cols-3 gap-2 lg:grid-cols-1">
+                <ArrowUpRight size={14} aria-hidden="true" className="icon-nudge-right opacity-60" />
+              </a>
+            </div>
+
+            {/* Compact profile selector — the "three profiles" idea, kept as a quiet control. */}
+            <div className="mt-10 max-w-xl border-t border-line pt-6">
+              <p className="font-display text-lg italic text-paper/85">{t.hero.selectorTitle}</p>
+              <div role="group" aria-label={t.hero.selectorLabel} className="mt-3 grid grid-cols-3 gap-2">
                 {PROFILE_IDS.map((id, index) => {
                   const active = profile === id
                   const color = PROFILE_COLORS[id]
@@ -499,7 +485,7 @@ export default function Portfolio() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => selectProfile(id)}
-                      className={`relative flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-[12px] leading-tight transition-colors duration-200 ease-out sm:text-[13px] lg:flex-row lg:justify-start lg:gap-3 lg:px-4 lg:text-left lg:text-sm ${
+                      className={`relative flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-[12px] leading-tight transition-colors duration-200 ease-out sm:flex-row sm:gap-2 sm:text-[13px] ${
                         active ? 'border-transparent font-semibold' : 'border-line text-paper/75 hover:border-paper/25 hover:text-paper'
                       }`}
                       style={active ? { color } : undefined}
@@ -513,20 +499,18 @@ export default function Portfolio() {
                           transition={{ duration: 0.25, ease: EASE }}
                         />
                       )}
-                      <span className="relative font-display text-lg italic leading-none" style={{ color, opacity: active ? 1 : 0.7 }} aria-hidden="true">
+                      <span className="relative font-display text-base italic leading-none" style={{ color, opacity: active ? 1 : 0.7 }} aria-hidden="true">
                         {ROMAN[index]}
                       </span>
-                      <span className="relative lg:hidden">{t.profiles[id].navLabel}</span>
-                      <span className="relative hidden flex-1 lg:inline">{t.profiles[id].title}</span>
-                      {active && <Check size={15} className="relative hidden shrink-0 lg:block" aria-hidden="true" />}
+                      <span className="relative">{t.profiles[id].navLabel}</span>
                     </button>
                   )
                 })}
               </div>
-              <p aria-live="polite" className="mt-4 min-h-[4.5rem] text-sm leading-relaxed text-muted">
+              <p aria-live="polite" className="mt-3 min-h-[3rem] text-sm leading-relaxed text-muted">
                 <span className="text-paper">{p.title}</span> — {p.pickerDescription}
               </p>
-              <p className="mt-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted">
+              <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted">
                 <span className="h-px w-4 bg-accent/60" aria-hidden="true" />
                 {t.profileUpdates}
               </p>
@@ -683,7 +667,7 @@ export default function Portfolio() {
                 <motion.h2
                   key={profile + '-quote'}
                   {...profileSwap}
-                  className="relative font-display text-4xl italic leading-[1.15] text-paper sm:text-5xl"
+                  className="relative text-[clamp(1.75rem,3.4vw,2.75rem)] font-medium italic leading-[1.2] tracking-[-0.03em] text-paper"
                 >
                   {p.bioQuote}
                 </motion.h2>
@@ -735,7 +719,7 @@ export default function Portfolio() {
                   <motion.div
                     key={index}
                     {...fadeUp}
-                    className="group/exp relative grid gap-5 pl-8 md:grid-cols-[240px_1fr] md:gap-0 md:pl-0"
+                    className="group/exp relative grid gap-5 pl-8 md:grid-cols-[240px_minmax(0,1fr)] md:gap-0 md:pl-0"
                   >
                     {/* Timeline node: fills in when its card is hovered or focused. */}
                     <span className="absolute left-0 top-0.5 flex h-[15px] w-[15px] items-center justify-center rounded-full border border-accent bg-ink transition-colors duration-200 ease-out group-hover/exp:bg-accent/20 group-focus-within/exp:bg-accent/20 md:left-[240px] md:top-8">
@@ -818,24 +802,17 @@ export default function Portfolio() {
             }
           />
 
-          {/* One lead case study, two compact ones. */}
-          <motion.div key={profile + '-featured'} {...profileSwap} className="mt-14 grid gap-5 md:grid-cols-2">
-            {featuredProjects.map((project, index) => (
-              <div key={project.id} className={index === 0 ? 'md:col-span-2' : undefined}>
-                <FeaturedProjectCard
-                  project={project}
-                  index={index}
-                  variant={index === 0 ? 'lead' : 'compact'}
-                  labels={{
-                    code: t.projectsSection.codeLabel,
-                    demo: t.projectsSection.demoLabel,
-                    caseStudy: t.caseStudy.readLabel,
-                    problem: t.caseStudy.problemLabel,
-                    confidential: t.caseStudy.confidentialNote,
-                  }}
-                />
-              </div>
-            ))}
+          <motion.div key={profile + '-featured'} {...profileSwap} className="mt-12 md:mt-14">
+            <FeaturedShowcase
+              projects={featuredProjects}
+              labels={{
+                code: t.projectsSection.codeLabel,
+                demo: t.projectsSection.demoLabel,
+                caseStudy: t.caseStudy.readLabel,
+                problem: t.caseStudy.problemLabel,
+                confidential: t.caseStudy.confidentialNote,
+              }}
+            />
           </motion.div>
 
           <div className="mt-12 flex justify-center">
@@ -1066,7 +1043,7 @@ export default function Portfolio() {
         <div className="relative mx-auto max-w-7xl px-5 md:px-10">
           <motion.div {...fadeUp}>
             <Eyebrow>{t.contact.eyebrow}</Eyebrow>
-            <h2 className="mt-5 font-display text-[clamp(3rem,8vw,6.5rem)] leading-[0.95] tracking-[-0.02em]">
+            <h2 className="mt-5 font-display text-[clamp(2.25rem,6.5vw,5rem)] leading-[1] tracking-[-0.045em]">
               {t.contact.heading[0]}
               <br />
               <em className="text-gold pr-2">{t.contact.heading[1]}</em>
@@ -1203,7 +1180,7 @@ export default function Portfolio() {
         </div>
         <p
           aria-hidden="true"
-          className="select-none whitespace-nowrap pb-2 pt-6 text-center font-display text-[22vw] italic leading-[0.85] tracking-[-0.03em] text-transparent"
+          className="select-none whitespace-nowrap pb-4 pt-6 text-center font-display text-[16vw] leading-[0.9] tracking-[-0.05em] text-transparent"
           style={{
             backgroundImage: 'linear-gradient(180deg, rgb(var(--accent) / 0.45), rgb(var(--accent) / 0.02) 90%)',
             WebkitBackgroundClip: 'text',

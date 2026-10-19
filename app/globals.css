@@ -82,10 +82,16 @@ section[id],
     padding-block: clamp(4.5rem, 9vw, 7rem);
   }
   .t-h2 {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 5.2vw, 4.5rem);
-    line-height: 1;
-    letter-spacing: -0.01em;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: clamp(2rem, 4.4vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+  /* Display text (headings, numerals): same family as body, heavier and tighter. */
+  .font-display {
+    font-weight: 600;
+    letter-spacing: -0.03em;
   }
   .t-intro {
     max-width: 36rem;

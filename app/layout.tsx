@@ -1,16 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Instrument_Serif, JetBrains_Mono, Manrope } from 'next/font/google'
+import { JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ProfileProvider } from '../contexts/ProfileContext'
-
-const display = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-display',
-  display: 'swap',
-})
 
 const mono = JetBrains_Mono({
   subsets: ['latin'],
@@ -19,9 +11,11 @@ const mono = JetBrains_Mono({
   display: 'swap',
 })
 
-const sans = Manrope({
+// One family for headings and text (headings use heavier weights + tighter tracking).
+const sans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   variable: '--font-sans',
   display: 'swap',
 })
@@ -70,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className={`motion-safe:scroll-smooth ${display.variable} ${mono.variable} ${sans.variable}`}>
+    <html lang="fr" className={`motion-safe:scroll-smooth ${mono.variable} ${sans.variable}`}>
       <body className="font-sans">
         <LanguageProvider>
           <ProfileProvider>{children}</ProfileProvider>

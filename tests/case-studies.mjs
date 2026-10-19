@@ -26,8 +26,11 @@ for (const w of [1440, 768, 390, 320]) {
       els.map((el) => ({ w: el.getBoundingClientRect().width, links: [...el.querySelectorAll('a')].map((a) => a.getAttribute('href')) })),
     )
     ok(`[${w}] profile ${i}: 3 featured cards`, cards.length === 3)
-    const leadWider = w >= 768 ? cards[0].w > cards[1].w * 1.5 : Math.abs(cards[0].w - cards[1].w) < 2
-    ok(`[${w}] profile ${i}: lead card layout`, leadWider, cards.map((c) => Math.round(c.w)).join('/'))
+    // Editorial index: rows share one width; the sticky preview only exists on large screens.
+    const sameWidth = cards.every((c) => Math.abs(c.w - cards[0].w) < 2)
+    const preview = await page.locator('#projects [aria-hidden="true"] .sticky').isVisible()
+    ok(`[${w}] profile ${i}: index rows aligned`, sameWidth, cards.map((c) => Math.round(c.w)).join('/'))
+    ok(`[${w}] profile ${i}: preview only on large screens`, preview === (w >= 1024))
     ok(`[${w}] profile ${i}: every card links to a case study`, cards.every((c) => c.links.some((h) => /^\/projects\/[a-z0-9-]+\/$/.test(h || ''))))
     ok(`[${w}] profile ${i}: no empty link`, cards.every((c) => c.links.every((h) => h && h !== '#')))
   }

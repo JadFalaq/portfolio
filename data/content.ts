@@ -105,17 +105,17 @@ export interface SiteContent {
   hero: {
     eyebrow: string
     role: string
-    headline: [string, string, string]
     description: string
+    seeking: string
+    location: string
     credibility: string
-    availability: string[]
     ctaProjects: string
     ctaCV: string
     ctaContact: string
     selectorLabel: string
-    statNumber: string
-    statLabel: string
-    statSub: string
+    selectorTitle: string
+    videoPause: string
+    videoPlay: string
   }
   profilePicker: {
     eyebrow: string
@@ -596,18 +596,18 @@ const fr: SiteContent = {
   },
   hero: {
     eyebrow: 'PROMOTION ENSIAS 2027',
-    role: "Élève-ingénieur à l'ENSIAS — IA, Data Engineering & MLOps",
-    headline: ['Trois profils.', 'Un seul', 'ingénieur.'],
-    description: "Je conçois des solutions d'IA appliquées à des problèmes métier, de l'ingestion des données au déploiement : agents LLM, systèmes RAG, pipelines de données et machine learning.",
+    role: "Élève-ingénieur en intelligence artificielle à l'ENSIAS",
+    description: "Je conçois des systèmes d'IA appliqués à des problèmes métier, de la donnée au déploiement : pipelines de données, IA générative, machine learning et MLOps.",
+    seeking: "À la recherche d'un stage de fin d'études de 6 mois à partir de janvier 2027",
+    location: 'France · mobilité nationale',
     credibility: 'Stages : Renault Digital (2026) · AKWA Group (2025)',
-    availability: ['Stage PFE · 6 mois', 'Dès janvier 2027', 'France · mobilité nationale'],
     ctaProjects: 'Explorer mes projets',
     ctaCV: 'Télécharger mon CV',
     ctaContact: 'Me contacter',
     selectorLabel: 'Choisir un profil',
-    statNumber: '03',
-    statLabel: 'PROFILS À EXPLORER',
-    statSub: 'Même socle technique',
+    selectorTitle: 'Trois profils. Un seul ingénieur.',
+    videoPause: 'Mettre la vidéo en pause',
+    videoPlay: 'Lire la vidéo',
   },
   profilePicker: {
     eyebrow: '01 / PROFILS',
@@ -883,18 +883,18 @@ const en: SiteContent = {
   },
   hero: {
     eyebrow: 'ENSIAS CLASS OF 2027',
-    role: 'AI engineering student at ENSIAS — AI, Data Engineering & MLOps',
-    headline: ['Three profiles.', 'One', 'engineer.'],
-    description: 'I build AI solutions for real business problems, from data ingestion to deployment: LLM agents, RAG systems, data pipelines and machine learning.',
+    role: 'Artificial intelligence engineering student at ENSIAS',
+    description: 'I build AI systems for real business problems, from data to deployment: data pipelines, generative AI, machine learning and MLOps.',
+    seeking: 'Looking for a 6-month final-year internship starting January 2027',
+    location: 'France · open to relocation',
     credibility: 'Internships: Renault Digital (2026) · AKWA Group (2025)',
-    availability: ['6-month final-year internship', 'From January 2027', 'France · open to relocation'],
     ctaProjects: 'Explore my projects',
     ctaCV: 'Download my CV',
     ctaContact: 'Contact me',
     selectorLabel: 'Choose a profile',
-    statNumber: '03',
-    statLabel: 'PROFILES TO EXPLORE',
-    statSub: 'Same technical foundation',
+    selectorTitle: 'Three profiles. One engineer.',
+    videoPause: 'Pause the video',
+    videoPlay: 'Play the video',
   },
   profilePicker: {
     eyebrow: '01 / PROFILES',

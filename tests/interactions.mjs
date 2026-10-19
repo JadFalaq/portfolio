@@ -55,27 +55,25 @@ const ctxFor = (opts = {}) => browser.newContext({ viewport: { width: 1440, heig
   const card = page.locator('#projects article').first()
   await card.scrollIntoViewIfNeeded()
   await page.waitForTimeout(600)
-  await card.hover()
+  // Hovering the 2nd row makes it active: preview cross-fades to it, title shifts ≤4px.
+  const row2 = page.locator('#projects article').nth(1)
+  await row2.hover()
   await page.waitForTimeout(400)
-  const hover = await card.evaluate((el) => {
-    const m = new DOMMatrixReadOnly(getComputedStyle(el).transform)
-    const img = el.querySelector('.card-media')
-    const s = img ? new DOMMatrixReadOnly(getComputedStyle(img).transform).a : 1
-    return { ty: m.m42, scale: s, border: getComputedStyle(el).borderTopColor }
+  const hover = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('#projects article')]
+    const layers = [...document.querySelectorAll('#projects .sticky .absolute.inset-0')].map((l) => Number(getComputedStyle(l).opacity))
+    const h3 = rows[1].querySelector('h3')
+    return { active: rows.map((r) => r.dataset.active), layers, tx: new DOMMatrixReadOnly(getComputedStyle(h3).transform).m41, td: getComputedStyle(h3).transitionDuration }
   })
-  ok('hover: card lifts ≤3px', hover.ty < 0 && hover.ty >= -3, `ty=${hover.ty}`)
-  ok('hover: image zoom ≤1.02', hover.scale > 1 && hover.scale <= 1.0201, `scale=${hover.scale.toFixed(3)}`)
-  const td = await card.evaluate((el) => getComputedStyle(el).transitionDuration)
-  ok('hover: transition 200–250ms', td.split(',').every((d) => parseFloat(d) >= 0.2 && parseFloat(d) <= 0.25), td)
+  ok('hover: row becomes active', hover.active.join() === 'false,true,false', hover.active.join())
+  ok('hover: preview shows the hovered project', hover.layers[1] === 1 && hover.layers[0] === 0, hover.layers.join('/'))
+  ok('hover: title shift ≤4px', hover.tx > 0 && hover.tx <= 4, `tx=${hover.tx}`)
+  ok('hover: transition 200–250ms', parseFloat(hover.td) >= 0.2 && parseFloat(hover.td) <= 0.25, hover.td)
 
   await page.mouse.move(5, 5)
-  await card.locator('a').first().focus()
-  await page.keyboard.press('Shift+Tab')
-  await page.keyboard.press('Tab')
+  await page.locator('#projects article').nth(2).locator('a').first().focus()
   await page.waitForTimeout(300)
-  const focusBorder = await card.evaluate((el) => getComputedStyle(el).borderTopColor)
-  const restBorder = await page.locator('#projects article').nth(2).evaluate((el) => getComputedStyle(el).borderTopColor)
-  ok('keyboard: focus-within accentuates border', focusBorder !== restBorder, `${focusBorder} vs ${restBorder}`)
+  ok('keyboard: focus activates the row', (await page.locator('#projects article').nth(2).getAttribute('data-active')) === 'true')
 
   // Profile switch: new titles in the DOM synchronously, never below 40% opacity.
   await page.evaluate(() => scrollTo(0, 0))
@@ -111,7 +109,40 @@ const ctxFor = (opts = {}) => browser.newContext({ viewport: { width: 1440, heig
   await page.waitForTimeout(400)
   const ty = await card.evaluate((el) => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42)
   ok('touch: no hover lift', ty === 0, `ty=${ty}`)
+  ok('touch: no side preview on phones', !(await page.locator('#projects .sticky').isVisible()))
   await ctx.close()
+}
+
+// 4b. Hero video: autoplay (muted) normally, never with reduced motion, pausable, poster without JS.
+{
+  const ctx = await ctxFor()
+  const page = await ctx.newPage()
+  await page.goto(BASE, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1500)
+  const v = await page.evaluate(() => { const el = document.querySelector('#hero video'); return { playing: !el.paused, muted: el.muted, poster: el.getAttribute('poster') } })
+  ok('video: plays muted by default', v.playing && v.muted)
+  await page.getByRole('button', { name: /pause/i }).click()
+  await page.waitForTimeout(300)
+  ok('video: pause button stops it', await page.evaluate(() => document.querySelector('#hero video').paused))
+  await page.evaluate(() => scrollTo(0, 3000)); await page.waitForTimeout(400)
+  await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(600)
+  ok('video: stays paused after scrolling back', await page.evaluate(() => document.querySelector('#hero video').paused))
+  await ctx.close()
+
+  const rctx = await ctxFor({ reducedMotion: 'reduce' })
+  const rpage = await rctx.newPage()
+  await rpage.goto(BASE, { waitUntil: 'networkidle' })
+  await rpage.waitForTimeout(1500)
+  ok('video: no autoplay with reduced motion', await rpage.evaluate(() => document.querySelector('#hero video').paused))
+  await rctx.close()
+
+  const nctx = await ctxFor({ javaScriptEnabled: false })
+  const npage = await nctx.newPage()
+  await npage.goto(BASE, { waitUntil: 'load' })
+  ok('video: poster in server HTML (no JS)', (await npage.locator('#hero video[poster="/hero-intro-poster.jpg"]').count()) === 1)
+  await nctx.close()
+  const res = await (await browser.newContext()).request.get(new URL('/hero-intro-poster.jpg', BASE).toString())
+  ok('video: poster served', res.status() === 200)
 }
 
 // 5. Layout stability: cumulative layout shift during load + profile switches.
