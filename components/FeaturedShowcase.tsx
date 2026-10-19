@@ -5,9 +5,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
 import type { Project } from '../data/content'
+import type { AkwaCopy } from '../data/akwa'
+import AkwaPipeline from './AkwaPipeline'
 
 interface FeaturedShowcaseProps {
   projects: Project[]
+  /** Copy for built-in diagrams (projects with `diagram`). */
+  diagrams: { akwa: AkwaCopy['pipeline'] }
   labels: {
     code: string
     demo: string
@@ -19,7 +23,7 @@ interface FeaturedShowcaseProps {
 
 // Editorial index: the three featured projects as numbered rows (all content always
 // visible), plus — on large screens — a sticky preview of the row being hovered or focused.
-export default function FeaturedShowcase({ projects, labels }: FeaturedShowcaseProps) {
+export default function FeaturedShowcase({ projects, diagrams, labels }: FeaturedShowcaseProps) {
   const [active, setActive] = useState(0)
   const current = projects[active] ?? projects[0]
 
@@ -33,6 +37,7 @@ export default function FeaturedShowcase({ projects, labels }: FeaturedShowcaseP
               index={index}
               active={index === active}
               onActivate={() => setActive(index)}
+              diagrams={diagrams}
               labels={labels}
             />
           </li>
@@ -50,7 +55,7 @@ export default function FeaturedShowcase({ projects, labels }: FeaturedShowcaseP
                   index === active ? 'scale-100 opacity-100' : 'scale-[1.02] opacity-0'
                 }`}
               >
-                <Preview project={project} />
+                <Preview project={project} diagrams={diagrams} />
               </div>
             ))}
           </div>
@@ -78,12 +83,14 @@ function Row({
   index,
   active,
   onActivate,
+  diagrams,
   labels,
 }: {
   project: Project
   index: number
   active: boolean
   onActivate: () => void
+  diagrams: FeaturedShowcaseProps['diagrams']
   labels: FeaturedShowcaseProps['labels']
 }) {
   const caseHref = project.slug ? `/projects/${project.slug}/` : undefined
@@ -115,19 +122,24 @@ function Row({
 
       <h3
         className={`mt-3 text-[clamp(1.375rem,2.4vw,1.875rem)] font-semibold leading-tight tracking-[-0.025em] text-paper transition-transform duration-[250ms] ease-out ${
-          active ? 'lg:translate-x-1' : ''
+          active ? 'lg:translate-x-[3px]' : ''
         }`}
       >
-        {project.title}
+        {project.shortTitle ?? project.title}
+        {project.subtitle && <span className="mt-1 block text-[0.7em] font-medium italic tracking-[-0.01em] text-paper/70">{project.subtitle}</span>}
       </h3>
       {project.role && <p className="mt-1.5 text-xs font-medium text-paper/70">{project.role}</p>}
 
       {/* Small screens: the visual sits in the row (no side preview). */}
-      {project.image && (
+      {project.image ? (
         <div className="relative mt-5 aspect-[16/9] overflow-hidden rounded-sm border border-line bg-surface lg:hidden">
-          <Preview project={project} />
+          <Preview project={project} diagrams={diagrams} />
         </div>
-      )}
+      ) : project.diagram === 'akwa' ? (
+        <div className="mt-5 overflow-hidden rounded-sm border border-line bg-surface lg:hidden">
+          <AkwaPipeline copy={diagrams.akwa} variant="compact" />
+        </div>
+      ) : null}
 
       {project.problem && (
         <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
@@ -135,6 +147,7 @@ function Row({
           {project.problem}
         </p>
       )}
+      {project.businessValue && <p className="mt-2 max-w-xl text-sm leading-relaxed text-paper/80">{project.businessValue}</p>}
 
       {results && results.length > 0 ? (
         <dl className="mt-5 flex flex-wrap gap-x-8 gap-y-3">
@@ -149,6 +162,14 @@ function Row({
       ) : project.metric ? (
         <p className="mt-5 font-mono text-[12px] text-paper">{project.metric}</p>
       ) : null}
+
+      <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Technologies">
+        {project.technologies.slice(0, 4).map((tech) => (
+          <li key={tech} className="rounded-full border border-line px-2.5 py-1 text-[11px] text-paper/70">
+            {tech}
+          </li>
+        ))}
+      </ul>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
         {caseHref && (
@@ -178,7 +199,8 @@ function Row({
 
 // Real visual when there is one; otherwise a typographic panel built from verified data
 // (logo, headline result, stack) — no invented illustration.
-function Preview({ project }: { project: Project }) {
+function Preview({ project, diagrams }: { project: Project; diagrams: FeaturedShowcaseProps['diagrams'] }) {
+  if (project.diagram === 'akwa') return <AkwaPipeline copy={diagrams.akwa} />
   if (project.image) {
     return (
       <Image

@@ -16,6 +16,8 @@ export interface ProjectMeta {
   slug?: string
   /** Links a case study to its internship: contributions are read from that experience entry. */
   company?: string
+  /** Built-in diagram shown instead of a screenshot (see components/AkwaPipeline). */
+  diagram?: 'akwa'
 }
 
 export interface ProjectResult {
@@ -26,6 +28,11 @@ export interface ProjectResult {
 // Translated project copy. `summary`, `role` and `metric` feed the featured cards.
 export interface ProjectText {
   title: string
+  /** Optional split title for the featured card (short name + subtitle). */
+  shortTitle?: string
+  subtitle?: string
+  /** One sentence on the business value, shown on the featured card. */
+  businessValue?: string
   description: string
   summary?: string
   role?: string
@@ -298,9 +305,10 @@ const projectMeta: Record<string, ProjectMeta> = {
   audit: {
     slug: 'akwa-audit-intelligent',
     company: 'AKWA Group',
-    technologies: ['Scikit-learn', 'Random Forest', 'Isolation Forest', 'Autoencoder (TensorFlow)', 'Pandas', 'PostgreSQL', 'Docker'],
+    // Card shows the first four; all confirmed in the repository (PostgreSQL is not used in the code).
+    technologies: ['Python', 'Pandas', 'Scikit-learn', 'Random Forest', 'Isolation Forest', 'Autoencoder (TensorFlow/Keras)', 'Docker'],
     github: 'https://github.com/JadFalaq/Audit-Intelligent',
-    image: '/anomalies detection.png',
+    diagram: 'akwa',
     year: '2025',
   },
   speaker: {
@@ -411,12 +419,14 @@ const projectsFr: Record<string, ProjectText> = {
   },
   audit: {
     title: "Audit Intelligent — Détection d'anomalies comptables",
-    description: "Pipeline de machine learning de bout en bout conçu pendant mon stage chez AKWA Group, suivant la méthode CRISP-DM, pour détecter les transactions présentes dans Afriware mais absentes de l'ERP JDE. Comparaison de modèles supervisés (régression logistique, SVM, arbre de décision, Random Forest, KNN) et non supervisés (Isolation Forest, autoencodeur) — Random Forest retenu, atteignant 98 % d'accuracy et un F1-score de 85 %, appliqué sur plus de 6 millions d'enregistrements SQL.",
-    problem: "Des transactions présentes dans Afriware n'apparaissaient pas dans l'ERP JDE, sur plus de 6 millions d'enregistrements SQL.",
-    results: [{ value: "98 %", label: "d'accuracy du Random Forest retenu" }, { value: "85 %", label: "de F1-score" }, { value: "6M+", label: "enregistrements SQL analysés" }],
-    summary: "Pipeline ML de bout en bout (CRISP-DM) qui détecte les transactions présentes dans Afriware mais absentes de l'ERP JDE, sur plus de 6 millions d'enregistrements SQL. Cinq modèles supervisés et deux non supervisés comparés avant de retenir un Random Forest.",
-    role: "Stagiaire ML & Data Engineer — équipe Data",
-    metric: "98 % d'accuracy · F1 85 %",
+    shortTitle: "Audit Intelligent",
+    subtitle: "Détection d'anomalies comptables",
+    description: "Pipeline de machine learning conçu pendant mon stage chez AKWA Group, selon CRISP-DM, pour détecter les transactions présentes dans Afriware mais absentes de JD Edwards (F0911 et F03B11). Rapprochement de trois sources, regroupement au niveau facture, comparaison de cinq modèles supervisés (régression logistique, SVM, arbre de décision, Random Forest, KNN) ; Isolation Forest et autoencodeur testés puis écartés. Random Forest : F1 de 0,85 et rappel de 0,78 sur la classe des factures manquantes, accuracy de 0,98.",
+    problem: "Détection de transactions présentes dans Afriware mais absentes des systèmes comptables JD Edwards, au moyen d'un pipeline de préparation et d'évaluation de modèles de machine learning.",
+    businessValue: "Objectif métier : aider les auditeurs à repérer les écarts de rapprochement entre systèmes comptables, sur l'ensemble des données plutôt que sur un échantillon.",
+    results: [{ value: "98 %", label: "accuracy globale" }, { value: "85 %", label: "F1-score, classe « Manquante »" }, { value: "78 %", label: "rappel, classe « Manquante »" }],
+    role: "AKWA Group · Stage ML & Data Engineering",
+    metric: "F1 0,85 · rappel 0,78 (classe « Manquante »)",
     category: 'Data & Machine Learning',
     status: 'Stage — AKWA Group',
   },
@@ -529,13 +539,15 @@ const projectsEn: Record<string, ProjectText> = {
     status: 'Academic project',
   },
   audit: {
-    title: 'Intelligent Audit — Accounting Anomaly Detection',
-    description: 'End-to-end machine learning pipeline built during my internship at AKWA Group, following CRISP-DM, to detect transactions present in Afriware but missing from the JDE ERP. Compared supervised models (logistic regression, SVM, decision tree, Random Forest, KNN) and unsupervised ones (Isolation Forest, autoencoder) — the selected Random Forest reached 98% accuracy and an 85% F1-score, applied across more than 6 million SQL records.',
-    problem: "Transactions present in Afriware were missing from the JDE ERP, across more than 6 million SQL records.",
-    results: [{ value: "98%", label: "accuracy of the selected Random Forest" }, { value: "85%", label: "F1-score" }, { value: "6M+", label: "SQL records analyzed" }],
-    summary: "End-to-end ML pipeline (CRISP-DM) detecting transactions present in Afriware but missing from the JDE ERP, across more than 6 million SQL records. Five supervised and two unsupervised models compared before selecting a Random Forest.",
-    role: "ML & Data Engineer Intern — Data team",
-    metric: "98% accuracy · 85% F1",
+    title: "Intelligent Audit — Accounting Anomaly Detection",
+    shortTitle: "Intelligent Audit",
+    subtitle: "Accounting Anomaly Detection",
+    description: "Machine learning pipeline built during my internship at AKWA Group, following CRISP-DM, to detect transactions present in Afriware but missing from JD Edwards (F0911 and F03B11). Reconciliation of three sources, invoice-level grouping, comparison of five supervised models (logistic regression, SVM, decision tree, Random Forest, KNN); Isolation Forest and an autoencoder tested then set aside. Random Forest: F1 of 0.85 and recall of 0.78 on the missing-invoice class, accuracy of 0.98.",
+    problem: "Detecting transactions present in Afriware but missing from the JD Edwards accounting systems, through a data preparation and machine learning evaluation pipeline.",
+    businessValue: "Business goal: help auditors spot reconciliation gaps between accounting systems, across all the data rather than a sample.",
+    results: [{ value: "98%", label: "overall accuracy" }, { value: "85%", label: "F1-score, “Missing” class" }, { value: "78%", label: "recall, “Missing” class" }],
+    role: "AKWA Group · ML & Data Engineering Internship",
+    metric: "F1 0.85 · recall 0.78 (“Missing” class)",
     category: 'Data & Machine Learning',
     status: 'Internship — AKWA Group',
   },

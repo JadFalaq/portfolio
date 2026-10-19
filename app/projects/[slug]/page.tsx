@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import CaseStudy from '../../../components/CaseStudy'
 import { caseStudySlugs, getProjectBySlug } from '../../../data/content'
+import { akwaCaseStudy } from '../../../data/akwa'
 
 export const dynamicParams = false
 
@@ -14,8 +15,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const project = getProjectBySlug('fr', slug)
   if (!project) return {}
-  const title = `${project.title} | Jad Falaq`
-  const description = project.problem ?? project.summary ?? project.description
+  const akwa = slug === 'akwa-audit-intelligent' ? akwaCaseStudy.fr : undefined
+  const title = akwa ? `${akwa.title} — ${akwa.subtitle} (AKWA Group) | Jad Falaq` : `${project.title} | Jad Falaq`
+  const description = akwa?.lead ?? project.problem ?? project.summary ?? project.description
   return {
     title,
     description,

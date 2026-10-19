@@ -11,9 +11,11 @@ interface ProjectCardProps {
   codeLabel: string
   demoLabel: string
   noLinkLabel: string
+  /** Drawn visual (e.g. a pipeline diagram) used when the project has no screenshot. */
+  visual?: React.ReactNode
 }
 
-export default function ProjectCard({ project, index, codeLabel, demoLabel, noLinkLabel }: ProjectCardProps) {
+export default function ProjectCard({ project, index, codeLabel, demoLabel, noLinkLabel, visual }: ProjectCardProps) {
   const number = String(index + 1).padStart(2, '0')
 
   const CardInner = (
@@ -27,6 +29,8 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, noLi
             className="card-media object-cover opacity-85"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
+        ) : visual ? (
+          <div className="absolute inset-0 overflow-hidden pt-12">{visual}</div>
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgb(var(--accent)_/_0.12),transparent_60%)]">
             <span className="font-display text-8xl italic text-accent/25">{number}</span>

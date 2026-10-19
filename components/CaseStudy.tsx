@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, Github, Languages as LanguagesIcon } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { siteContent, getExperienceFor, getProjectBySlug } from '../data/content'
+import AkwaCaseStudy from './AkwaCaseStudy'
 
 // Bullets from the experience entries start with "Label : text" — keep the label visible.
 function Bullet({ text }: { text: string }) {
@@ -28,7 +29,18 @@ function Block({ label, children }: { label: string; children: React.ReactNode }
 }
 
 // Only documented sections are rendered: nothing is filled in to look complete.
+// The AKWA project has a dedicated, report-based case study on the same URL.
+const DEDICATED: Record<string, () => React.ReactElement> = {
+  'akwa-audit-intelligent': AkwaCaseStudy,
+}
+
 export default function CaseStudy({ slug }: { slug: string }) {
+  const Dedicated = DEDICATED[slug]
+  if (Dedicated) return <Dedicated />
+  return <GenericCaseStudy slug={slug} />
+}
+
+function GenericCaseStudy({ slug }: { slug: string }) {
   const { language, toggleLanguage } = useLanguage()
   const t = siteContent[language]
   const project = getProjectBySlug(language, slug)

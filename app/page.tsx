@@ -27,9 +27,11 @@ import {
 import ProjectCard from '../components/ProjectCard'
 import FeaturedShowcase from '../components/FeaturedShowcase'
 import HeroVideo from '../components/HeroVideo'
+import AkwaPipeline from '../components/AkwaPipeline'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProfile, PROFILE_IDS, type ProfileId } from '../contexts/ProfileContext'
 import { siteContent, contact } from '../data/content'
+import { akwaCaseStudy } from '../data/akwa'
 
 type FormStatus = 'idle' | 'sending' | 'success' | 'error'
 
@@ -805,6 +807,7 @@ export default function Portfolio() {
           <motion.div key={profile + '-featured'} {...profileSwap} className="mt-12 md:mt-14">
             <FeaturedShowcase
               projects={featuredProjects}
+              diagrams={{ akwa: akwaCaseStudy[language].pipeline }}
               labels={{
                 code: t.projectsSection.codeLabel,
                 demo: t.projectsSection.demoLabel,
@@ -847,6 +850,18 @@ export default function Portfolio() {
                       codeLabel={t.projectsSection.codeLabel}
                       demoLabel={t.projectsSection.demoLabel}
                       noLinkLabel={t.projectsSection.noLinkLabel}
+                      visual={
+                        project.diagram === 'akwa' ? (
+                          <>
+                            <div className="md:hidden">
+                              <AkwaPipeline copy={akwaCaseStudy[language].pipeline} variant="compact" />
+                            </div>
+                            <div className="hidden h-full md:block">
+                              <AkwaPipeline copy={akwaCaseStudy[language].pipeline} />
+                            </div>
+                          </>
+                        ) : undefined
+                      }
                     />
                   ))}
                 </div>
