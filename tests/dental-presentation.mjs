@@ -40,6 +40,8 @@ try {
       }
       // The catalog uses a stretched case-study link: carousel controls must stay independent.
       await page.goto(base, { waitUntil: 'networkidle' })
+      assert(await viewer().isVisible(), 'Snani presentation is visible on the default profile without expanding the catalog')
+      await page.locator('#profiles').getByRole('button').nth(1).click()
       await page.getByRole('button', { name: /Voir tous mes projets|View all my projects/ }).click()
       await checkNavigation()
       assert.equal(new URL(page.url()).pathname, '/')

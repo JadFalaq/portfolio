@@ -795,7 +795,7 @@ const fr: SiteContent = {
       ],
       projectIds: ['audit', 'dental', 'cvmatcher', 'shoplifting', 'motoscraper', 'irrigation', 'segmentation', 'deeplearning', 'misinformation', 'speaker'],
       cvFile: '/CV_Jad_Falaq_DataAI_FR.pdf',
-      featuredIds: ['audit', 'renault', 'bookpipeline'],
+      featuredIds: ['audit', 'renault', 'dental'],
     },
     genai: {
       navLabel: 'IA Générative',
@@ -1082,7 +1082,7 @@ const en: SiteContent = {
       ],
       projectIds: ['audit', 'dental', 'cvmatcher', 'shoplifting', 'motoscraper', 'irrigation', 'segmentation', 'deeplearning', 'misinformation', 'speaker'],
       cvFile: '/CV_Jad_Falaq_DataAI_EN.pdf',
-      featuredIds: ['audit', 'renault', 'bookpipeline'],
+      featuredIds: ['audit', 'renault', 'dental'],
     },
     genai: {
       navLabel: 'Generative AI',

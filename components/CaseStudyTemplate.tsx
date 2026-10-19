@@ -120,6 +120,11 @@ export default function CaseStudyTemplate({ project, data }: { project: Project;
 
           {(project.github || project.demo) && (
             <div className="mt-7 flex flex-wrap gap-3">
+              {project.presentation && (
+                <a href="#presentation" className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-accent/50 px-5 text-sm text-accent transition-colors hover:bg-accent/10">
+                  {language === 'fr' ? 'Voir la présentation' : 'View presentation'}
+                </a>
+              )}
               {project.github && (
                 <a
                   href={project.github}
