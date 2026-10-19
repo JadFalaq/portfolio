@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { ArrowUpRight, Lock } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
 import type { Project } from '../data/content'
 
 interface ProjectCardProps {
@@ -11,11 +12,13 @@ interface ProjectCardProps {
   codeLabel: string
   demoLabel: string
   noLinkLabel: string
+  caseStudyLabel: string
   /** Drawn visual (e.g. a pipeline diagram) used when the project has no screenshot. */
   visual?: React.ReactNode
 }
 
-export default function ProjectCard({ project, index, codeLabel, demoLabel, noLinkLabel, visual }: ProjectCardProps) {
+export default function ProjectCard({ project, index, codeLabel, demoLabel, caseStudyLabel, visual }: ProjectCardProps) {
+  const caseHref = project.slug ? `/projects/${project.slug}/` : undefined
   const number = String(index + 1).padStart(2, '0')
 
   const CardInner = (
@@ -63,33 +66,35 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, noLi
           ))}
         </div>
 
-        <div className="mt-6 flex items-center justify-between border-t border-line pt-4">
-          {project.github ? (
-            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/80 transition-colors group-hover:text-accent">
-              {codeLabel}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
-              <Lock size={11} />
-              {noLinkLabel}
+        {/* Links sit above the stretched case-study link so each stays clickable on its own. */}
+        <div className="relative z-10 mt-6 flex flex-wrap items-center gap-2 border-t border-line pt-4">
+          {caseHref && (
+            <span className="mr-auto inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-paper transition-colors duration-200 group-hover:text-accent">
+              {caseStudyLabel}
+              <ArrowRight size={13} aria-hidden="true" className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
             </span>
           )}
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${codeLabel} — ${project.title}`}
+              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-full border border-line px-3.5 font-mono text-[11px] uppercase tracking-[0.15em] text-paper transition-colors duration-200 hover:border-accent hover:text-accent"
+            >
+              <Github size={13} aria-hidden="true" /> {codeLabel}
+            </a>
+          )}
           {project.demo && (
-            // Sits above the stretched GitHub link so it stays clickable on its own.
             <a
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-gold relative z-10 ml-5 mr-auto inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.2em]"
+              aria-label={`${demoLabel} — ${project.title}`}
+              className="btn-gold inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-3.5 font-mono text-[11px] uppercase tracking-[0.15em]"
             >
-              {demoLabel}
-              <ArrowUpRight size={13} />
+              {demoLabel} <ArrowUpRight size={13} aria-hidden="true" />
             </a>
-          )}
-          {project.github && (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-accent transition-colors duration-200 ease-out group-hover:border-accent group-hover:bg-accent group-hover:text-ink">
-              <ArrowUpRight size={16} />
-            </span>
           )}
         </div>
       </div>
@@ -108,15 +113,9 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, noLi
       className="h-full"
     >
       <div className={className}>
-        {project.github && (
-          // Stretched link: the whole card opens the repo without nesting the demo link inside an <a>.
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={project.title}
-            className="absolute inset-0 z-[5]"
-          />
+        {caseHref && (
+          // Stretched link: the whole card opens the case study (GitHub/demo buttons sit above it).
+          <Link href={caseHref} aria-label={`${caseStudyLabel} — ${project.title}`} className="absolute inset-0 z-[5]" />
         )}
         {CardInner}
       </div>

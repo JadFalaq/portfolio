@@ -850,6 +850,7 @@ export default function Portfolio() {
                       codeLabel={t.projectsSection.codeLabel}
                       demoLabel={t.projectsSection.demoLabel}
                       noLinkLabel={t.projectsSection.noLinkLabel}
+                      caseStudyLabel={t.caseStudy.readLabel}
                       visual={
                         project.diagram === 'akwa' ? (
                           <>

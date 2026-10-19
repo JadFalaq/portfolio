@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowUpRight, Github, Languages as LanguagesIcon } from 'luc
 import { useLanguage } from '../contexts/LanguageContext'
 import { siteContent, getExperienceFor, getProjectBySlug } from '../data/content'
 import AkwaCaseStudy from './AkwaCaseStudy'
+import CaseStudyTemplate from './CaseStudyTemplate'
+import { caseStudies } from '../data/caseStudies'
 
 // Bullets from the experience entries start with "Label : text" — keep the label visible.
 function Bullet({ text }: { text: string }) {
@@ -37,6 +39,15 @@ const DEDICATED: Record<string, () => React.ReactElement> = {
 export default function CaseStudy({ slug }: { slug: string }) {
   const Dedicated = DEDICATED[slug]
   if (Dedicated) return <Dedicated />
+  return <TemplatedCaseStudy slug={slug} />
+}
+
+// Every other project: shared template fed by data/caseStudies.ts; generic page as a fallback.
+function TemplatedCaseStudy({ slug }: { slug: string }) {
+  const { language } = useLanguage()
+  const project = getProjectBySlug(language, slug)
+  const data = project ? caseStudies[project.id] : undefined
+  if (project && data) return <CaseStudyTemplate project={project} data={data} />
   return <GenericCaseStudy slug={slug} />
 }
 
