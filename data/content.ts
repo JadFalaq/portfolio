@@ -12,6 +12,15 @@ export interface ProjectMeta {
   /** In-page anchor with the full story, for work without a public repository. */
   detailsHref?: string
   year: string
+  /** URL segment of the case study page (/projects/<slug>/) — featured projects only. */
+  slug?: string
+  /** Links a case study to its internship: contributions are read from that experience entry. */
+  company?: string
+}
+
+export interface ProjectResult {
+  value: string
+  label: string
 }
 
 // Translated project copy. `summary`, `role` and `metric` feed the featured cards.
@@ -23,6 +32,14 @@ export interface ProjectText {
   metric?: string
   category: string
   status: string
+  // Case study fields — every one is optional and only rendered when documented.
+  /** One-sentence problem statement. */
+  problem?: string
+  /** Verified figures only (taken from the site or the CVs). */
+  results?: ProjectResult[]
+  /** Not documented yet — kept in the model so they can be filled without code changes. */
+  decisions?: string[]
+  limitations?: string[]
 }
 
 export type Project = ProjectMeta & ProjectText & { id: string }
@@ -115,6 +132,30 @@ export interface SiteContent {
   }
   skillsHeading: string
   experienceHeading: string
+  sections: {
+    experienceEyebrow: string
+    experienceIntro: string
+    skillsEyebrow: string
+    skillsIntro: string
+    cvEyebrow: string
+  }
+  profileUpdates: string
+  caseStudy: {
+    readLabel: string
+    backLabel: string
+    contextLabel: string
+    problemLabel: string
+    roleLabel: string
+    overviewLabel: string
+    contributionsLabel: string
+    resultsLabel: string
+    stackLabel: string
+    decisionsLabel: string
+    limitationsLabel: string
+    linksLabel: string
+    experienceLink: string
+    confidentialNote: string
+  }
   projectsSection: {
     eyebrow: string
     heading: [string, string]
@@ -189,6 +230,7 @@ const periods = {
 
 const projectMeta: Record<string, ProjectMeta> = {
   cvmatcher: {
+    slug: 'cvmatch',
     technologies: ['LangGraph', 'Hybrid RAG (BM25 + embeddings)', 'Azure OpenAI', 'Pydantic', 'FastAPI', 'Next.js', 'Docker', 'pytest'],
     github: 'https://github.com/JadFalaq/cv-matcher',
     demo: 'https://cv-offer-matcher.vercel.app/',
@@ -196,17 +238,20 @@ const projectMeta: Record<string, ProjectMeta> = {
     year: '2026',
   },
   ragchatbot: {
+    slug: 'rag-strategies',
     technologies: ['LangChain', 'Azure OpenAI', 'ChromaDB', 'Unstructured', 'Google Cloud Vision', 'Pydantic', 'MMR', 'Multi-Query', 'RRF'],
     github: 'https://github.com/JadFalaq/Comparing-RAG-Strategies-Chunking-Retrieval-Ranking',
     image: '/rag_card.png',
     year: '2026',
   },
   bookpipeline: {
+    slug: 'airflow-book-pipeline',
     technologies: ['Apache Airflow', 'Celery', 'Redis', 'PostgreSQL', 'Docker Compose', 'Flask', 'Hugging Face Transformers', 'FLAN-T5', 'NLLB-200', 'Coqui TTS'],
     github: 'https://github.com/JadFalaq/Pipeline-d-Ingestion-Automatis-de-Livres',
     year: '2025',
   },
   dental: {
+    slug: 'snani-dental-mlops',
     technologies: ['YOLOv8 (Ultralytics)', 'DVC', 'MLflow', 'FastAPI', 'Docker', 'GitHub Actions', 'Azure Container Apps', 'React (Vite)', 'pytest'],
     github: 'https://github.com/JadFalaq/detection_dentaire_mlops',
     demo: 'https://snani.vercel.app/',
@@ -220,6 +265,7 @@ const projectMeta: Record<string, ProjectMeta> = {
     year: '2026',
   },
   misinformation: {
+    slug: 'arabert-medical-misinformation',
     technologies: ['AraBERT', 'Hugging Face Transformers', 'PyTorch', 'Accelerate', 'scikit-learn', 'TF-IDF (baseline)'],
     github: 'https://github.com/JadFalaq/misinformation_covid_detector_arabic',
     image: '/miss_info_detection.png',
@@ -250,6 +296,8 @@ const projectMeta: Record<string, ProjectMeta> = {
     year: '2026',
   },
   audit: {
+    slug: 'akwa-audit-intelligent',
+    company: 'AKWA Group',
     technologies: ['Scikit-learn', 'Random Forest', 'Isolation Forest', 'Autoencoder (TensorFlow)', 'Pandas', 'PostgreSQL', 'Docker'],
     github: 'https://github.com/JadFalaq/Audit-Intelligent',
     image: '/anomalies detection.png',
@@ -268,6 +316,8 @@ const projectMeta: Record<string, ProjectMeta> = {
     year: '2024',
   },
   renault: {
+    slug: 'renault-digital-genai-qa',
+    company: 'Renault Digital',
     technologies: ['Microsoft Copilot API', 'pgvector', 'unstructured.io', 'Pydantic', 'FastAPI'],
     logo: '/rdm logo.jpg',
     detailsHref: '#experience',
@@ -285,6 +335,8 @@ const projectsFr: Record<string, ProjectText> = {
   cvmatcher: {
     title: 'cvmatch — Adapter son CV à une offre, compétence par compétence',
     description: "Outil agentique LangGraph qui confronte un CV à une offre : pour chaque compétence demandée, il retrouve la preuve dans le CV (RAG hybride BM25 + embeddings, fusion RRF), la classe (visible, cachée, implicite, absente), calcule un score et propose des reformulations sans jamais inventer d'expérience. Principe « le LLM propose, le code vérifie » : citations contrôlées mot pour mot, score calculé en code, validation humaine (interrupt). API FastAPI en streaming (SSE), site Next.js, 125 tests pytest, CI GitHub Actions et image Docker pour Azure Container Apps.",
+    problem: "Adapter un CV à une offre sans jamais inventer d'expérience : chaque compétence demandée doit s'appuyer sur une preuve dans le CV.",
+    results: [{ value: "125", label: "tests pytest" }, { value: "CI", label: "GitHub Actions, image Docker" }],
     summary: "Agent LangGraph qui confronte un CV à une offre compétence par compétence : RAG hybride (BM25 + embeddings, RRF), citations vérifiées mot pour mot, score calculé en code et validation humaine — sans jamais inventer d'expérience.",
     metric: "125 tests pytest · CI GitHub Actions",
     category: 'IA Agentique & RAG',
@@ -293,6 +345,7 @@ const projectsFr: Record<string, ProjectText> = {
   ragchatbot: {
     title: 'Stratégies RAG : chunking, retrieval et ranking',
     description: "Implémentation pas à pas d'un pipeline RAG sur Azure OpenAI et ChromaDB, en comparant les stratégies à chaque étape : découpage (par caractères, sémantique, agentique par LLM), recherche (similarité, seuil de score, MMR, multi-query) et fusion des classements (Reciprocal Rank Fusion). Inclut une génération conversationnelle tenant compte de l'historique et un RAG multimodal (Unstructured, Google Cloud Vision).",
+    problem: "Comparer, étape par étape, les stratégies de chunking, de retrieval et de classement d'un pipeline RAG.",
     summary: "Pipeline RAG sur Azure OpenAI et ChromaDB qui compare les stratégies à chaque étape : chunking (caractères, sémantique, agentique), retrieval (seuil de score, MMR, multi-query) et fusion des classements (RRF), plus un RAG multimodal.",
     category: 'IA Générative & RAG',
     status: 'Projet académique',
@@ -300,6 +353,8 @@ const projectsFr: Record<string, ProjectText> = {
   bookpipeline: {
     title: "Pipeline automatisé d'ingestion et de traitement de livres",
     description: 'Pipeline orchestré par Apache Airflow (CeleryExecutor, Redis, PostgreSQL, Docker Compose) qui découvre et analyse des livres PDF/EPUB, puis appelle un service ML Flask : résumés à plusieurs niveaux et plus de 20 questions-réponses par livre (FLAN-T5), traduction en français et en arabe (NLLB-200) et synthèse vocale (Coqui TTS, gTTS). Le dynamic task mapping traite chaque livre en parallèle.',
+    problem: "Transformer automatiquement des livres PDF/EPUB en résumés, questions-réponses, traductions et audio.",
+    results: [{ value: "20+", label: "questions-réponses générées par livre" }],
     summary: "Pipeline Apache Airflow (CeleryExecutor, Redis, PostgreSQL, Docker Compose) qui découvre et analyse des livres PDF/EPUB, les traite en parallèle (dynamic task mapping) et appelle un service ML : résumés, questions-réponses, traduction et synthèse vocale.",
     category: 'Data Engineering & GenAI',
     status: 'Projet académique',
@@ -307,6 +362,8 @@ const projectsFr: Record<string, ProjectText> = {
   dental: {
     title: 'Détection de pathologies dentaires — MLOps',
     description: 'Détecteur YOLOv8 de 7 catégories de pathologies dentaires (remappées depuis 14 classes) sur radiographies panoramiques, évalué sur un jeu de validation, de test et un jeu externe. Pipeline MLOps complet : données versionnées avec DVC, expériences suivies dans MLflow, registre de modèles (champion/candidat), API FastAPI conteneurisée et interface React. CI/CD GitHub Actions avec tests pytest et déploiement sur Azure Container Apps et Vercel.',
+    problem: "Détecter 7 catégories de pathologies dentaires sur radiographies panoramiques, avec un modèle versionné, traçable et déployé en continu.",
+    results: [{ value: "86 %", label: "de précision" }, { value: "7", label: "catégories de pathologies" }, { value: "1 808", label: "radiographies" }],
     summary: "Détecteur YOLOv8 de 7 catégories de pathologies dentaires sur radiographies panoramiques, industrialisé : données versionnées (DVC), suivi d'expériences et registre de modèles (MLflow), API FastAPI conteneurisée, CI/CD et déploiement continu sur Azure.",
     metric: "Précision 86 % · 1 808 radiographies",
     category: 'Computer Vision & MLOps',
@@ -321,6 +378,8 @@ const projectsFr: Record<string, ProjectText> = {
   misinformation: {
     title: 'Détection de désinformation médicale en arabe',
     description: "Fine-tuning d'AraBERT (bert-base-arabertv02) sur ArCOV19-Rumors pour détecter la désinformation médicale dans des tweets arabes : normalisation du texte arabe, déduplication, seuil de décision optimisé, analyse d'erreurs et comparaison à une baseline TF-IDF — 87 % d'accuracy et 0,87 de F1 macro sur le jeu de test.",
+    problem: "Détecter la désinformation médicale dans des tweets arabes (corpus ArCOV19-Rumors).",
+    results: [{ value: "87 %", label: "d'accuracy sur le jeu de test" }, { value: "0,87", label: "de F1 macro sur le jeu de test" }],
     summary: "Fine-tuning d'AraBERT sur ArCOV19-Rumors pour détecter la désinformation médicale dans des tweets arabes : normalisation, déduplication, seuil de décision optimisé, analyse d'erreurs et comparaison à une baseline TF-IDF.",
     metric: "87 % d'accuracy · F1 macro 0,87",
     category: 'NLP & Fine-tuning',
@@ -353,6 +412,8 @@ const projectsFr: Record<string, ProjectText> = {
   audit: {
     title: "Audit Intelligent — Détection d'anomalies comptables",
     description: "Pipeline de machine learning de bout en bout conçu pendant mon stage chez AKWA Group, suivant la méthode CRISP-DM, pour détecter les transactions présentes dans Afriware mais absentes de l'ERP JDE. Comparaison de modèles supervisés (régression logistique, SVM, arbre de décision, Random Forest, KNN) et non supervisés (Isolation Forest, autoencodeur) — Random Forest retenu, atteignant 98 % d'accuracy et un F1-score de 85 %, appliqué sur plus de 6 millions d'enregistrements SQL.",
+    problem: "Des transactions présentes dans Afriware n'apparaissaient pas dans l'ERP JDE, sur plus de 6 millions d'enregistrements SQL.",
+    results: [{ value: "98 %", label: "d'accuracy du Random Forest retenu" }, { value: "85 %", label: "de F1-score" }, { value: "6M+", label: "enregistrements SQL analysés" }],
     summary: "Pipeline ML de bout en bout (CRISP-DM) qui détecte les transactions présentes dans Afriware mais absentes de l'ERP JDE, sur plus de 6 millions d'enregistrements SQL. Cinq modèles supervisés et deux non supervisés comparés avant de retenir un Random Forest.",
     role: "Stagiaire ML & Data Engineer — équipe Data",
     metric: "98 % d'accuracy · F1 85 %",
@@ -380,6 +441,8 @@ const projectsFr: Record<string, ProjectText> = {
   renault: {
     title: "Renault Digital — Agents LLM & RAG pour la QA",
     description: "Chaîne d'ingestion de plus de 400 PDF (OCR des tableaux et images, découpage par structure, retrieval MMR sur pgvector) alimentant un RAG, et système multi-agents LLM (Requirement Analyzer, Test Design) qui transforme des exigences en tickets Jira et scénarios Gherkin, validés par un humain à chaque étape.",
+    problem: "Rédiger les tickets Jira et les scénarios Gherkin à partir des exigences prenait 10 à 20 minutes par exigence à l'équipe QA.",
+    results: [{ value: "85 %", label: "des générations acceptées sans modification" }, { value: "10–20 → 1–2 min", label: "de rédaction par exigence" }, { value: "400+", label: "PDF ingérés dans le RAG" }],
     category: "Stage — Renault Digital",
     status: "Mis en production en interne",
     role: "Stagiaire Ingénieur IA — Quality Engineering",
@@ -391,6 +454,8 @@ const projectsEn: Record<string, ProjectText> = {
   cvmatcher: {
     title: 'cvmatch — Tailoring a CV to a Job Offer, Skill by Skill',
     description: 'Agentic LangGraph tool that checks a CV against a job offer: for every required skill it retrieves the evidence in the CV (hybrid BM25 + embeddings RAG, RRF fusion), classifies it (visible, hidden, implicit, absent), computes a score and suggests rewrites without ever inventing experience. Built on “the LLM proposes, the code verifies”: citations checked word for word, score computed in code, human validation (interrupt). Streaming FastAPI API (SSE), Next.js front end, 125 pytest tests, GitHub Actions CI and a Docker image for Azure Container Apps.',
+    problem: "Tailor a CV to a job offer without ever inventing experience: every required skill must be backed by evidence in the CV.",
+    results: [{ value: "125", label: "pytest tests" }, { value: "CI", label: "GitHub Actions, Docker image" }],
     summary: "LangGraph agent that checks a CV against a job offer skill by skill: hybrid RAG (BM25 + embeddings, RRF), citations verified word for word, score computed in code and human validation — never inventing experience.",
     metric: "125 pytest tests · GitHub Actions CI",
     category: 'Agentic AI & RAG',
@@ -399,6 +464,7 @@ const projectsEn: Record<string, ProjectText> = {
   ragchatbot: {
     title: 'RAG Strategies: Chunking, Retrieval & Ranking',
     description: 'Step-by-step implementation of a RAG pipeline on Azure OpenAI and ChromaDB, comparing strategies at every stage: chunking (character-based, semantic, LLM-driven agentic), retrieval (similarity, score threshold, MMR, multi-query) and rank fusion (Reciprocal Rank Fusion). Includes history-aware conversational generation and multimodal RAG (Unstructured, Google Cloud Vision).',
+    problem: "Compare, stage by stage, the chunking, retrieval and ranking strategies of a RAG pipeline.",
     summary: "RAG pipeline on Azure OpenAI and ChromaDB comparing strategies at every stage: chunking (character, semantic, agentic), retrieval (score threshold, MMR, multi-query) and rank fusion (RRF), plus multimodal RAG.",
     category: 'Generative AI & RAG',
     status: 'Academic project',
@@ -406,6 +472,8 @@ const projectsEn: Record<string, ProjectText> = {
   bookpipeline: {
     title: 'Automated Book Ingestion & Processing Pipeline',
     description: 'Apache Airflow pipeline (CeleryExecutor, Redis, PostgreSQL, Docker Compose) that discovers and parses PDF/EPUB books, then calls a Flask ML service: multi-level summaries and 20+ question-answer pairs per book (FLAN-T5), French and Arabic translation (NLLB-200) and text-to-speech (Coqui TTS, gTTS). Dynamic task mapping processes every book in parallel.',
+    problem: "Automatically turn PDF/EPUB books into summaries, Q&A, translations and audio.",
+    results: [{ value: "20+", label: "question-answer pairs generated per book" }],
     summary: "Apache Airflow pipeline (CeleryExecutor, Redis, PostgreSQL, Docker Compose) that discovers and parses PDF/EPUB books, processes them in parallel (dynamic task mapping) and calls an ML service: summaries, Q&A, translation and text-to-speech.",
     category: 'Data Engineering & GenAI',
     status: 'Academic project',
@@ -413,6 +481,8 @@ const projectsEn: Record<string, ProjectText> = {
   dental: {
     title: 'Dental Pathology Detection — MLOps',
     description: 'YOLOv8 detector for 7 dental pathology categories (remapped from 14 classes) on panoramic radiographs, evaluated on validation, test and external splits. Full MLOps pipeline: data versioned with DVC, experiments tracked in MLflow, model registry (champion/candidate), containerized FastAPI service and React front end. GitHub Actions CI/CD with pytest and deployment to Azure Container Apps and Vercel.',
+    problem: "Detect 7 dental pathology categories on panoramic X-rays, with a versioned, traceable and continuously deployed model.",
+    results: [{ value: "86%", label: "precision" }, { value: "7", label: "pathology categories" }, { value: "1,808", label: "X-rays" }],
     summary: "YOLOv8 detector for 7 dental pathology categories on panoramic X-rays, industrialized: versioned data (DVC), experiment tracking and model registry (MLflow), containerized FastAPI service, CI/CD and continuous deployment on Azure.",
     metric: "86% precision · 1,808 X-rays",
     category: 'Computer Vision & MLOps',
@@ -427,6 +497,8 @@ const projectsEn: Record<string, ProjectText> = {
   misinformation: {
     title: 'Arabic Medical Misinformation Detector',
     description: 'Fine-tuned AraBERT (bert-base-arabertv02) on ArCOV19-Rumors to detect medical misinformation in Arabic tweets: Arabic text normalization, deduplication, tuned decision threshold, error analysis and comparison with a TF-IDF baseline — 87% accuracy and 0.87 macro F1 on the test set.',
+    problem: "Detect medical misinformation in Arabic tweets (ArCOV19-Rumors corpus).",
+    results: [{ value: "87%", label: "accuracy on the test set" }, { value: "0.87", label: "macro F1 on the test set" }],
     summary: "AraBERT fine-tuned on ArCOV19-Rumors to detect medical misinformation in Arabic tweets: normalization, deduplication, tuned decision threshold, error analysis and comparison with a TF-IDF baseline.",
     metric: "87% accuracy · 0.87 macro F1",
     category: 'NLP & Fine-tuning',
@@ -459,6 +531,8 @@ const projectsEn: Record<string, ProjectText> = {
   audit: {
     title: 'Intelligent Audit — Accounting Anomaly Detection',
     description: 'End-to-end machine learning pipeline built during my internship at AKWA Group, following CRISP-DM, to detect transactions present in Afriware but missing from the JDE ERP. Compared supervised models (logistic regression, SVM, decision tree, Random Forest, KNN) and unsupervised ones (Isolation Forest, autoencoder) — the selected Random Forest reached 98% accuracy and an 85% F1-score, applied across more than 6 million SQL records.',
+    problem: "Transactions present in Afriware were missing from the JDE ERP, across more than 6 million SQL records.",
+    results: [{ value: "98%", label: "accuracy of the selected Random Forest" }, { value: "85%", label: "F1-score" }, { value: "6M+", label: "SQL records analyzed" }],
     summary: "End-to-end ML pipeline (CRISP-DM) detecting transactions present in Afriware but missing from the JDE ERP, across more than 6 million SQL records. Five supervised and two unsupervised models compared before selecting a Random Forest.",
     role: "ML & Data Engineer Intern — Data team",
     metric: "98% accuracy · 85% F1",
@@ -486,6 +560,8 @@ const projectsEn: Record<string, ProjectText> = {
   renault: {
     title: "Renault Digital — LLM Agents & RAG for QA",
     description: "Ingestion pipeline of 400+ PDFs (OCR of tables and images, structure-aware chunking, MMR retrieval on pgvector) feeding a RAG, and a multi-agent LLM system (Requirement Analyzer, Test Design) turning requirements into Jira tickets and Gherkin scenarios, with human validation at each step.",
+    problem: "Writing Jira tickets and Gherkin scenarios from requirements took the QA team 10 to 20 minutes per requirement.",
+    results: [{ value: "85%", label: "of generations accepted without edits" }, { value: "10–20 → 1–2 min", label: "writing time per requirement" }, { value: "400+", label: "PDFs ingested into the RAG" }],
     category: "Internship — Renault Digital",
     status: "Deployed internally",
     role: "AI Engineer Intern — Quality Engineering",
@@ -552,8 +628,32 @@ const fr: SiteContent = {
   },
   skillsHeading: 'Compétences techniques',
   experienceHeading: 'Expérience professionnelle',
+  sections: {
+    experienceEyebrow: '03 / EXPÉRIENCE',
+    experienceIntro: 'Deux stages en entreprise, des systèmes livrés et utilisés.',
+    skillsEyebrow: '05 / COMPÉTENCES',
+    skillsIntro: 'La boîte à outils mobilisée pour ce profil.',
+    cvEyebrow: '06 / CV',
+  },
+  profileUpdates: 'Adapte les projets phares, les compétences et le CV',
+  caseStudy: {
+    readLabel: "Lire l'étude de cas",
+    backLabel: 'Retour aux projets',
+    contextLabel: 'Contexte',
+    problemLabel: 'Problème',
+    roleLabel: 'Rôle',
+    overviewLabel: 'Solution',
+    contributionsLabel: 'Contributions',
+    resultsLabel: 'Résultats',
+    stackLabel: 'Technologies',
+    decisionsLabel: 'Décisions techniques',
+    limitationsLabel: 'Limites',
+    linksLabel: 'Liens',
+    experienceLink: "Voir l'expérience complète",
+    confidentialNote: 'Projet interne : aucune capture ni donnée métier publiée, par confidentialité.',
+  },
   projectsSection: {
-    eyebrow: '03 / PREUVES',
+    eyebrow: '04 / PROJETS',
     heading: ['Projets', 'phares.'],
     description: 'Les trois projets les plus représentatifs de ce profil. Tous les autres restent à un clic.',
     viewAllLabel: 'Voir tous mes projets',
@@ -602,7 +702,7 @@ const fr: SiteContent = {
     { title: 'Autonomie & Résolution de problèmes', description: "Solution IA livrée en production sous contraintes d'accès et de confidentialité" },
   ],
   contact: {
-    eyebrow: '04 / CONTACT',
+    eyebrow: '07 / CONTACT',
     heading: ['Construisons', 'quelque chose.'],
     description: "Pipelines de données, systèmes d'IA générative ou modèles de machine learning — si le problème est réel, je veux en discuter.",
     availability: 'Disponible pour un stage de fin d\'études à partir de janvier 2027',
@@ -815,8 +915,32 @@ const en: SiteContent = {
   },
   skillsHeading: 'Technical skills',
   experienceHeading: 'Professional experience',
+  sections: {
+    experienceEyebrow: '03 / EXPERIENCE',
+    experienceIntro: 'Two industry internships, systems delivered and in use.',
+    skillsEyebrow: '05 / SKILLS',
+    skillsIntro: 'The toolkit used for this profile.',
+    cvEyebrow: '06 / CV',
+  },
+  profileUpdates: 'Updates the featured projects, skills and CV',
+  caseStudy: {
+    readLabel: 'Read the case study',
+    backLabel: 'Back to projects',
+    contextLabel: 'Context',
+    problemLabel: 'Problem',
+    roleLabel: 'Role',
+    overviewLabel: 'Solution',
+    contributionsLabel: 'Contributions',
+    resultsLabel: 'Results',
+    stackLabel: 'Technologies',
+    decisionsLabel: 'Technical decisions',
+    limitationsLabel: 'Limitations',
+    linksLabel: 'Links',
+    experienceLink: 'See the full experience',
+    confidentialNote: 'Internal project: no screenshots or business data published, for confidentiality.',
+  },
   projectsSection: {
-    eyebrow: '03 / PROOF',
+    eyebrow: '04 / SELECTED WORK',
     heading: ['Featured', 'projects.'],
     description: 'The three projects that best represent this profile. Everything else is one click away.',
     viewAllLabel: 'View all my projects',
@@ -865,7 +989,7 @@ const en: SiteContent = {
     { title: 'Autonomy & Problem Solving', description: 'Delivered an AI solution to production under access and confidentiality constraints' },
   ],
   contact: {
-    eyebrow: '04 / CONTACT',
+    eyebrow: '07 / CONTACT',
     heading: ["Let's build", 'something real.'],
     description: "Data pipelines, generative AI systems or machine learning models — if the problem is real, I'd like to hear about it.",
     availability: 'Available for a final-year internship starting January 2027',
@@ -1030,3 +1154,24 @@ const en: SiteContent = {
 
 export const siteContent: Record<Language, SiteContent> = { fr, en }
 export const contact = contactInfo
+
+// ---------------------------------------------------------------------------
+// Case studies (/projects/<slug>/)
+// ---------------------------------------------------------------------------
+
+export const caseStudySlugs = Object.values(projectMeta)
+  .map((m) => m.slug)
+  .filter((slug): slug is string => Boolean(slug))
+
+export function getProjectBySlug(language: Language, slug: string): Project | undefined {
+  return Object.values(siteContent[language].projects).find((p) => p.slug === slug)
+}
+
+// Internship contributions come from the experience entries themselves (no copy):
+// the most detailed variant across the three profiles is used.
+export function getExperienceFor(language: Language, company: string): ExperienceEntry | undefined {
+  const entries = Object.values(siteContent[language].profiles)
+    .flatMap((profile) => profile.experience)
+    .filter((exp) => exp.company === company)
+  return entries.sort((a, b) => b.description.join('').length - a.description.join('').length)[0]
+}

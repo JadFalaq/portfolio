@@ -70,6 +70,32 @@ function Eyebrow({ children, light = false }: { children: React.ReactNode; light
   )
 }
 
+// Every main section opens the same way: label, title, optional short intro.
+function SectionHeader({
+  eyebrow,
+  title,
+  intro,
+  light = false,
+  children,
+}: {
+  eyebrow: string
+  title: React.ReactNode
+  intro?: React.ReactNode
+  light?: boolean
+  children?: React.ReactNode
+}) {
+  return (
+    <motion.div {...fadeUp} className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <div>
+        <Eyebrow light={light}>{eyebrow}</Eyebrow>
+        <h2 className="t-h2 mt-5">{title}</h2>
+        {intro && <p className={`t-intro mt-5 ${light ? 'text-mutedInk' : 'text-muted'}`}>{intro}</p>}
+      </div>
+      {children}
+    </motion.div>
+  )
+}
+
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState('hero')
   const [scrolled, setScrolled] = useState(false)
@@ -238,7 +264,7 @@ export default function Portfolio() {
                     title={t.profiles[id].title}
                     onClick={() => selectProfile(id)}
                     className={`relative flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] transition-opacity duration-200 ease-out ${
-                      active ? 'font-semibold' : 'opacity-70 hover:opacity-100'
+                      active ? 'font-semibold' : 'opacity-90 hover:opacity-100'
                     }`}
                     style={{ color }}
                   >
@@ -500,6 +526,10 @@ export default function Portfolio() {
               <p aria-live="polite" className="mt-4 min-h-[4.5rem] text-sm leading-relaxed text-muted">
                 <span className="text-paper">{p.title}</span> — {p.pickerDescription}
               </p>
+              <p className="mt-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted">
+                <span className="h-px w-4 bg-accent/60" aria-hidden="true" />
+                {t.profileUpdates}
+              </p>
             </div>
           </div>
         </div>
@@ -535,12 +565,12 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       {/* Profile picker                                                    */}
       {/* ---------------------------------------------------------------- */}
-      <section id="profiles" className="grain relative bg-paper py-24 text-ink md:py-36">
+      <section id="profiles" className="grain relative bg-paper section-y text-ink">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
           <motion.div {...fadeUp} className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
               <Eyebrow light>{t.profilePicker.eyebrow}</Eyebrow>
-              <h2 className="mt-6 font-display text-5xl leading-[1] tracking-[-0.01em] sm:text-6xl md:text-7xl">
+              <h2 className="t-h2 mt-5">
                 {t.profilePicker.heading[0]}
                 <br />
                 <em className="text-accentDeep">{t.profilePicker.heading[1]}</em>
@@ -618,7 +648,7 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       {/* Bio                                                               */}
       {/* ---------------------------------------------------------------- */}
-      <section id="about" className="relative overflow-hidden py-24 md:py-36">
+      <section id="about" className="relative overflow-hidden section-y">
         <div className="pointer-events-none absolute -left-40 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.08),transparent_65%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-16 px-5 md:grid-cols-[340px_1fr] md:gap-20 md:px-10">
           <motion.div {...fadeUp}>
@@ -688,48 +718,11 @@ export default function Portfolio() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      {/* Skills                                                            */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="border-t border-line bg-surface py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-5 md:px-10">
-          <motion.h2 {...fadeUp} className="font-display text-4xl sm:text-5xl">
-            {t.skillsHeading}
-          </motion.h2>
-            <motion.div
-              key={profile + '-skills'}
-              {...profileSwap}
-              className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
-            >
-              {p.skills.map((group, i) => (
-                <div key={group.heading} className="group bg-surface p-7 transition-colors duration-200 ease-out hover:bg-ink">
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-display text-lg italic text-accent/60">{String(i + 1).padStart(2, '0')}</span>
-                    <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper">{group.heading}</h3>
-                  </div>
-                  <div className="mt-5 flex flex-wrap gap-x-2 gap-y-2">
-                    {group.items.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-line px-3 py-1 text-xs text-muted transition-colors group-hover:border-accent/20 group-hover:text-paper/80"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------------- */}
       {/* Experience — timeline                                             */}
       {/* ---------------------------------------------------------------- */}
-      <section id="experience" className="border-t border-line py-24 md:py-36">
+      <section id="experience" className="border-t border-line section-y">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
-          <motion.h2 {...fadeUp} className="font-display text-4xl sm:text-5xl">
-            {t.experienceHeading}
-          </motion.h2>
+          <SectionHeader eyebrow={t.sections.experienceEyebrow} title={t.experienceHeading} intro={t.sections.experienceIntro} />
 
             <motion.div
               key={profile + '-exp'}
@@ -809,34 +802,41 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       {/* Projects                                                          */}
       {/* ---------------------------------------------------------------- */}
-      <section id="projects" className="border-t border-line py-24 md:py-36">
+      <section id="projects" className="border-t border-line section-y">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
-          <motion.div {...fadeUp}>
-            <Eyebrow>{t.projectsSection.eyebrow}</Eyebrow>
-            <h2 className="mt-6 font-display text-5xl leading-[1] sm:text-6xl md:text-7xl">
-              {t.projectsSection.heading[0]} <em className="text-gold pr-1">{t.projectsSection.heading[1]}</em>
-            </h2>
-            <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted">
-              <span className="text-paper">{p.title}</span> — {t.projectsSection.description}
-            </p>
-          </motion.div>
+          <SectionHeader
+            eyebrow={t.projectsSection.eyebrow}
+            title={
+              <>
+                {t.projectsSection.heading[0]} <em className="text-gold pr-1">{t.projectsSection.heading[1]}</em>
+              </>
+            }
+            intro={
+              <>
+                <span className="text-paper">{p.title}</span> — {t.projectsSection.description}
+              </>
+            }
+          />
 
-            <motion.div
-              key={profile + '-featured'}
-              {...profileSwap}
-              className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {featuredProjects.map((project, index) => (
+          {/* One lead case study, two compact ones. */}
+          <motion.div key={profile + '-featured'} {...profileSwap} className="mt-14 grid gap-5 md:grid-cols-2">
+            {featuredProjects.map((project, index) => (
+              <div key={project.id} className={index === 0 ? 'md:col-span-2' : undefined}>
                 <FeaturedProjectCard
-                  key={project.id}
                   project={project}
                   index={index}
-                  codeLabel={t.projectsSection.codeLabel}
-                  demoLabel={t.projectsSection.demoLabel}
-                  detailsLabel={t.projectsSection.detailsLabel}
+                  variant={index === 0 ? 'lead' : 'compact'}
+                  labels={{
+                    code: t.projectsSection.codeLabel,
+                    demo: t.projectsSection.demoLabel,
+                    caseStudy: t.caseStudy.readLabel,
+                    problem: t.caseStudy.problemLabel,
+                    confidential: t.caseStudy.confidentialNote,
+                  }}
                 />
-              ))}
-            </motion.div>
+              </div>
+            ))}
+          </motion.div>
 
           <div className="mt-12 flex justify-center">
             <button
@@ -880,13 +880,47 @@ export default function Portfolio() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
+      {/* Skills                                                            */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="border-t border-line bg-surface section-y">
+        <div className="mx-auto max-w-7xl px-5 md:px-10">
+          <SectionHeader eyebrow={t.sections.skillsEyebrow} title={t.skillsHeading} intro={t.sections.skillsIntro} />
+            <motion.div
+              key={profile + '-skills'}
+              {...profileSwap}
+              className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {p.skills.map((group, i) => (
+                <div key={group.heading} className="group bg-surface p-7 transition-colors duration-200 ease-out hover:bg-ink">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-display text-lg italic text-accent" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                    <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper">{group.heading}</h3>
+                  </div>
+                  <div className="mt-5 flex flex-wrap gap-x-2 gap-y-2">
+                    {group.items.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-line px-3 py-1 text-xs text-muted transition-colors group-hover:border-accent/20 group-hover:text-paper/80"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
       {/* CV                                                                */}
       {/* ---------------------------------------------------------------- */}
-      <section id="cv" className="grain relative bg-paper py-24 text-ink md:py-36">
+      <section id="cv" className="grain relative bg-paper section-y text-ink">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
           <motion.div {...fadeUp} className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <h2 className="font-display text-5xl leading-[1] sm:text-6xl md:text-7xl">
+              <Eyebrow light>{t.sections.cvEyebrow}</Eyebrow>
+              <h2 className="t-h2 mt-5">
                 {t.cv.heading.split(' ').slice(0, -1).join(' ')}{' '}
                 <em className="text-accentDeep">{t.cv.heading.split(' ').slice(-1)}</em>
               </h2>
@@ -1027,12 +1061,12 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       {/* Contact                                                           */}
       {/* ---------------------------------------------------------------- */}
-      <section id="contact" className="grain relative overflow-hidden py-24 md:py-36">
+      <section id="contact" className="grain relative overflow-hidden section-y">
         <div className="pointer-events-none absolute -bottom-40 right-0 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.16),transparent_65%)] blur-2xl" />
         <div className="relative mx-auto max-w-7xl px-5 md:px-10">
           <motion.div {...fadeUp}>
             <Eyebrow>{t.contact.eyebrow}</Eyebrow>
-            <h2 className="mt-6 font-display text-6xl leading-[0.95] tracking-[-0.02em] sm:text-7xl md:text-[7.5rem]">
+            <h2 className="mt-5 font-display text-[clamp(3rem,8vw,6.5rem)] leading-[0.95] tracking-[-0.02em]">
               {t.contact.heading[0]}
               <br />
               <em className="text-gold pr-2">{t.contact.heading[1]}</em>
