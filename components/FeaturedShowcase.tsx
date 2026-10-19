@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
 import type { Project } from '../data/content'
 import type { AkwaCopy } from '../data/akwa'
-import AkwaPipeline from './AkwaPipeline'
+import AuditPresentation from './AuditPresentation'
 
 interface FeaturedShowcaseProps {
   projects: Project[]
@@ -53,9 +53,13 @@ function Row({
     <article
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-accent/50 focus-within:border-accent/50 sm:p-6"
     >
-      <div className="relative mb-6 h-64 overflow-hidden rounded-lg border border-line bg-ink">
-        <Preview project={project} diagrams={diagrams} />
-      </div>
+      {project.diagram === 'akwa' ? (
+        <div className="mb-6"><AuditPresentation compact /></div>
+      ) : (
+        <div className="relative mb-6 h-64 overflow-hidden rounded-lg border border-line bg-ink">
+          <Preview project={project} diagrams={diagrams} />
+        </div>
+      )}
 
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
         <span className="text-accent">{String(index + 1).padStart(2, '0')}</span>
@@ -129,7 +133,6 @@ function Row({
 // Real visual when there is one; otherwise a typographic panel built from verified data
 // (logo, headline result, stack) — no invented illustration.
 function Preview({ project, diagrams }: { project: Project; diagrams: FeaturedShowcaseProps['diagrams'] }) {
-  if (project.diagram === 'akwa') return <div className="flex h-full items-center"><AkwaPipeline copy={diagrams.akwa} variant="compact" /></div>
   if (project.image) {
     return (
       <Image

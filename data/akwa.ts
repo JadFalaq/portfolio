@@ -392,6 +392,9 @@ const en: AkwaCopy = {
 
 export const akwaCaseStudy: Record<Language, AkwaCopy> = { fr, en }
 
-// Published presentation (anonymized copy). Stays null until the owner approves
-// publication — the section and its buttons are not rendered while it is null.
-export const akwaPresentation: { href: string; cover: string } | null = null
+// Owner-provided presentation, published with its rendered slides.
+export const akwaPresentation = {
+  href: '/presentation_audit_intelligent.pdf',
+  cover: '/audit-presentation/page-01.webp',
+  pages: 28,
+}

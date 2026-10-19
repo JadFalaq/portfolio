@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import AuditPresentation from './AuditPresentation'
 import { ArrowDownToLine, ArrowLeft, ArrowUpRight, Check, CircleDashed, FileText, Github, Languages as LanguagesIcon } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { akwaCaseStudy, akwaModels, akwaPresentation, akwaRandomForest } from '../data/akwa'
@@ -112,6 +113,15 @@ export default function AkwaCaseStudy() {
             )}
           </div>
         </div>
+
+        <section id="presentation" className="scroll-mt-24 pb-12">
+          <h2 className="mb-3 text-xl font-semibold text-paper">{c.presentation.title}</h2>
+          <p className="mb-5 text-sm leading-relaxed text-muted">{c.presentation.text}</p>
+          <AuditPresentation />
+          <a href={akwaPresentation.href} download className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-accent hover:underline">
+            <ArrowDownToLine size={15} aria-hidden="true" /> {c.presentation.download}
+          </a>
+        </section>
 
         {/* 01 — Challenge */}
         <Section id="challenge" index={1} title={c.challenge.title}>
@@ -394,38 +404,6 @@ export default function AkwaCaseStudy() {
             </div>
           </div>
         </Section>
-
-        {/* Presentation — only once publication has been approved (akwaPresentation set). */}
-        {akwaPresentation && (
-          <section id="presentation" className="scroll-mt-24 border-t border-line py-14">
-            <div className="flex flex-col gap-6 rounded-sm border border-line bg-surface/40 p-6 sm:flex-row sm:items-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={akwaPresentation.cover} alt="" loading="lazy" width={240} height={135} className="w-full max-w-[15rem] rounded-sm border border-line" />
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold tracking-[-0.02em] text-paper">{c.presentation.title}</h2>
-                <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.15em] text-muted">{c.presentation.meta}</p>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{c.presentation.text}</p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <a
-                    href={akwaPresentation.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-paper px-5 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-accent"
-                  >
-                    <FileText size={15} aria-hidden="true" /> {c.presentation.read}
-                  </a>
-                  <a
-                    href={akwaPresentation.href}
-                    download
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-line px-5 text-sm text-paper transition-colors duration-200 hover:border-accent hover:text-accent"
-                  >
-                    <ArrowDownToLine size={15} aria-hidden="true" /> {c.presentation.download}
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         <footer className="border-t border-line pt-8 text-xs leading-relaxed text-muted">
           <span className="font-mono uppercase tracking-[0.15em] text-paper/70">{c.sourcesTitle} — </span>

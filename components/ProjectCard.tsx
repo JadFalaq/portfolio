@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
 import type { Project } from '../data/content'
+import AuditPresentation from './AuditPresentation'
 
 interface ProjectCardProps {
   project: Project
@@ -23,6 +24,9 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
 
   const CardInner = (
     <>
+      {project.diagram === 'akwa' ? (
+        <div className="relative z-10 p-3"><AuditPresentation compact /></div>
+      ) : (
       <div className="relative aspect-[16/10] overflow-hidden bg-surface">
         {project.image ? (
           <Image
@@ -50,6 +54,8 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
         </div>
         <span className="absolute right-5 top-5 font-mono text-[10px] tracking-[0.2em] text-paper/60">{project.year}</span>
       </div>
+
+      )}
 
       <div className="relative flex flex-col justify-center flex-1 px-6 pb-6 pt-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">{project.status}</p>
