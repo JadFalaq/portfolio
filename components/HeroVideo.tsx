@@ -8,7 +8,7 @@ interface HeroVideoProps {
   playLabel: string
 }
 
-// Muted portrait loop (no audio track). The poster is the server-rendered frame, so the
+// Muted full-bleed background loop (no audio track), centred on the subject. The poster is the server-rendered frame, so the
 // hero is complete without JavaScript; playback only starts after hydration, never when
 // the visitor prefers reduced motion, and pauses while off-screen or in a hidden tab.
 export default function HeroVideo({ pauseLabel, playLabel }: HeroVideoProps) {
@@ -66,10 +66,10 @@ export default function HeroVideo({ pauseLabel, playLabel }: HeroVideoProps) {
   }
 
   return (
-    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm border border-accent/25 bg-surface shadow-[0_30px_80px_-40px_rgb(var(--accent)_/_0.45)]">
+    <div className="absolute inset-0 overflow-hidden bg-ink">
       <video
         ref={ref}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover object-center"
         poster="/hero-intro-poster.jpg"
         muted
         loop
@@ -81,13 +81,11 @@ export default function HeroVideo({ pauseLabel, playLabel }: HeroVideoProps) {
         <source src="/hero-intro.webm" type="video/webm" />
         <source src="/hero-intro.mp4" type="video/mp4" />
       </video>
-      {/* Quiet bottom fade so the frame sits in the dark page. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-ink/60 to-transparent" />
       <button
         type="button"
         onClick={toggle}
         aria-label={playing ? pauseLabel : playLabel}
-        className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-full border border-paper/25 bg-ink/60 text-paper backdrop-blur transition-colors duration-200 ease-out hover:border-accent hover:text-accent"
+        className="absolute right-5 top-24 z-10 flex h-11 w-11 md:right-10 items-center justify-center rounded-full border border-paper/25 bg-ink/60 text-paper backdrop-blur transition-colors duration-200 ease-out hover:border-accent hover:text-accent"
       >
         {playing ? <Pause size={15} aria-hidden="true" /> : <Play size={15} aria-hidden="true" />}
       </button>

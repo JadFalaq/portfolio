@@ -77,7 +77,7 @@ for (const locale of ['fr-FR', 'en-US']) {
   const seen = new Set()
   for (const i of [0, 1, 2]) {
     await page.evaluate(() => scrollTo(0, 0))
-    await page.getByRole('group', { name: 'Choisir un profil' }).getByRole('button').nth(i).click()
+    await page.locator('#profiles').getByRole('button').nth(i).click()
     await page.waitForTimeout(300)
     const toggle = page.getByRole('button', { name: /Voir tous mes projets/ })
     await toggle.click()

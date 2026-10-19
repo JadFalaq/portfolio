@@ -398,54 +398,50 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       {/* Entrance is CSS (.hero-rise: opacity + 8px, 450ms) so the hero is painted
           from the server HTML instead of waiting for hydration. */}
-      <section id="hero" className="grain relative flex min-h-[100svh] items-center overflow-hidden pb-20 pt-28 md:pt-32">
-        {/* Atmosphere: soft glow + editorial column rules */}
-        <div className="pointer-events-none absolute -right-40 -top-40 h-[42rem] w-[42rem] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.22),transparent_65%)] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-60 -left-40 h-[36rem] w-[36rem] rounded-full bg-[radial-gradient(circle,rgba(120,140,190,0.10),transparent_65%)] blur-2xl" />
-        <div className="pointer-events-none absolute inset-0 mx-auto hidden max-w-7xl grid-cols-4 px-10 lg:grid">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="border-l border-paper/[0.035] last:border-r" />
-          ))}
+      {/* Full-bleed video background; profile details sit at the bottom over a gradient.
+          The poster is in the server HTML, so the hero is complete without JavaScript. */}
+      <section id="hero" className="relative isolate flex min-h-[100svh] items-end overflow-hidden pb-14 pt-28 md:pb-20">
+        <div className="absolute inset-0 -z-10">
+          <HeroVideo pauseLabel={t.hero.videoPause} playLabel={t.hero.videoPlay} />
+          {/* Legibility: dark at the bottom (text) and top (navbar), lighter in the middle. */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/75 to-ink/10" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/80 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-2/3 bg-gradient-to-r from-ink/70 to-transparent md:block" />
         </div>
 
-        {/* Mobile order: identity → video → details. Desktop: text left, video right. */}
-        <div className="relative mx-auto grid w-full max-w-7xl gap-x-16 gap-y-10 px-5 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:grid-rows-[auto_1fr] lg:items-start">
-          <div>
+        <div className="relative mx-auto w-full max-w-7xl px-5 md:px-10">
+          <div className="max-w-3xl">
             <div className="hero-rise">
               <Eyebrow>{t.hero.eyebrow}</Eyebrow>
             </div>
             <h1
-              className="hero-rise mt-6 font-display text-[clamp(2.75rem,8vw,6rem)] leading-[0.95] tracking-[-0.045em] text-paper"
+              className="hero-rise mt-5 font-display text-[clamp(2.75rem,8vw,6rem)] leading-[0.95] tracking-[-0.045em] text-paper"
               style={{ animationDelay: '60ms' }}
             >
               Jad <em className="text-gold pr-2">Falaq</em>
             </h1>
-            <p className="hero-rise mt-5 max-w-xl text-lg font-medium leading-snug text-paper/90 md:text-xl" style={{ animationDelay: '140ms' }}>
+            <p className="hero-rise mt-4 max-w-xl text-lg font-medium leading-snug text-paper md:text-xl" style={{ animationDelay: '140ms' }}>
               {t.hero.role}
             </p>
           </div>
 
-          <div className="hero-rise w-full max-w-[15rem] sm:max-w-[20rem] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:max-w-none" style={{ animationDelay: '200ms' }}>
-            <HeroVideo pauseLabel={t.hero.videoPause} playLabel={t.hero.videoPlay} />
-          </div>
+          <div className="hero-rise mt-6 max-w-2xl" style={{ animationDelay: '220ms' }}>
+            <p className="text-base leading-relaxed text-paper/80 md:text-lg">{t.hero.description}</p>
 
-          <div className="hero-rise lg:col-start-1 lg:row-start-2" style={{ animationDelay: '260ms' }}>
-            <p className="max-w-xl text-base leading-relaxed text-muted md:text-lg">{t.hero.description}</p>
-
-            <div className="mt-6 max-w-xl border-l-2 border-accent pl-4">
+            <div className="mt-5 border-l-2 border-accent pl-4">
               <p className="flex items-start gap-2.5 text-[15px] font-medium leading-snug text-paper">
                 <span className="mt-[0.45em] h-2 w-2 shrink-0 rounded-full bg-accent shadow-[0_0_0_3px_rgb(var(--accent)_/_0.18)]" aria-hidden="true" />
                 {t.hero.seeking}
               </p>
-              <p className="mt-1.5 pl-[18px] text-sm text-muted">{t.hero.location}</p>
+              <p className="mt-1.5 pl-[18px] text-sm text-paper/70">{t.hero.location}</p>
             </div>
 
-            <p className="mt-5 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/70">
+            <p className="mt-5 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/75">
               <Briefcase size={13} className="shrink-0 text-accent" aria-hidden="true" />
               {t.hero.credibility}
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
                 href="#projects"
                 className="btn-gold group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-7 text-sm font-semibold tracking-wide shadow-[0_10px_30px_-12px_rgb(var(--accent)_/_0.55)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_14px_34px_-12px_rgb(var(--accent)_/_0.7)]"
@@ -473,61 +469,8 @@ export default function Portfolio() {
                 <ArrowUpRight size={14} aria-hidden="true" className="icon-nudge-right opacity-60" />
               </a>
             </div>
-
-            {/* Compact profile selector — the "three profiles" idea, kept as a quiet control. */}
-            <div className="mt-10 max-w-xl border-t border-line pt-6">
-              <p className="font-display text-lg italic text-paper/85">{t.hero.selectorTitle}</p>
-              <div role="group" aria-label={t.hero.selectorLabel} className="mt-3 grid grid-cols-3 gap-2">
-                {PROFILE_IDS.map((id, index) => {
-                  const active = profile === id
-                  const color = PROFILE_COLORS[id]
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() => selectProfile(id)}
-                      className={`relative flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-[12px] leading-tight transition-colors duration-200 ease-out sm:flex-row sm:gap-2 sm:text-[13px] ${
-                        active ? 'border-transparent font-semibold' : 'border-line text-paper/75 hover:border-paper/25 hover:text-paper'
-                      }`}
-                      style={active ? { color } : undefined}
-                    >
-                      {active && (
-                        <motion.span
-                          layoutId="hero-profile-indicator"
-                          aria-hidden="true"
-                          className="absolute inset-0 rounded-xl border"
-                          style={{ borderColor: `${color}99`, backgroundColor: `${color}1A` }}
-                          transition={{ duration: 0.25, ease: EASE }}
-                        />
-                      )}
-                      <span className="relative font-display text-base italic leading-none" style={{ color, opacity: active ? 1 : 0.7 }} aria-hidden="true">
-                        {ROMAN[index]}
-                      </span>
-                      <span className="relative">{t.profiles[id].navLabel}</span>
-                    </button>
-                  )
-                })}
-              </div>
-              <p aria-live="polite" className="mt-3 min-h-[3rem] text-sm leading-relaxed text-muted">
-                <span className="text-paper">{p.title}</span> — {p.pickerDescription}
-              </p>
-              <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted">
-                <span className="h-px w-4 bg-accent/60" aria-hidden="true" />
-                {t.profileUpdates}
-              </p>
-            </div>
           </div>
         </div>
-
-        {/* Scroll cue */}
-        <a
-          href="#profiles"
-          aria-label="Scroll"
-          className="group absolute bottom-6 left-1/2 hidden -translate-x-1/2 p-2 lg:block"
-        >
-          <span className="block h-12 w-px bg-gradient-to-b from-accent/70 to-transparent transition-transform duration-200 ease-out group-hover:translate-y-1" />
-        </a>
       </section>
 
       {/* ---------------------------------------------------------------- */}

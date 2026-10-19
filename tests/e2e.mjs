@@ -49,7 +49,7 @@ for (const w of [1440, 390]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, locale: 'fr-FR', reducedMotion: 'reduce' })
   const page = await ctx.newPage()
   await page.goto(BASE, { waitUntil: 'networkidle' })
-  const selector = page.getByRole('group', { name: 'Choisir un profil' })
+  const selector = page.locator('#profiles')
   for (const [id, exp] of Object.entries(EXPECT)) {
     const btn = selector.getByRole('button').nth(LABELS[id])
     await btn.click()
@@ -151,7 +151,7 @@ for (const w of [1440, 390]) {
   const page = await ctx.newPage()
   await page.goto(BASE, { waitUntil: 'networkidle' })
   await page.waitForTimeout(300)
-  const selector = page.getByRole('group', { name: 'Choose a profile' })
+  const selector = page.locator('#profiles')
   for (const [i, file] of ['DataAI', 'GenAI', 'MLOps'].entries()) {
     await selector.getByRole('button').nth(i).click()
     await page.waitForTimeout(300)

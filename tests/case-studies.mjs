@@ -18,7 +18,7 @@ for (const w of [1440, 768, 390, 320]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, locale: 'fr-FR', reducedMotion: 'reduce' })
   const page = await ctx.newPage()
   await page.goto(BASE, { waitUntil: 'networkidle' })
-  const selector = page.getByRole('group', { name: 'Choisir un profil' })
+  const selector = page.locator('#profiles')
   for (const i of [0, 1, 2]) {
     await selector.getByRole('button').nth(i).click()
     await page.waitForTimeout(300)
@@ -45,7 +45,7 @@ for (const w of [1440, 768, 390, 320]) {
   const page = await ctx.newPage()
   await page.goto(BASE, { waitUntil: 'networkidle' })
   const hrefs = new Set()
-  const selector = page.getByRole('group', { name: 'Choisir un profil' })
+  const selector = page.locator('#profiles')
   for (const i of [0, 1, 2]) {
     await selector.getByRole('button').nth(i).click()
     await page.waitForTimeout(300)
@@ -80,7 +80,7 @@ for (const w of [1440, 768, 390, 320]) {
   await page.getByRole('link', { name: /Retour aux projets/ }).click()
   await page.waitForURL(/\/#projects$/)
   ok('back link returns to #projects with profile kept', (await page.evaluate(() => document.documentElement.dataset.profile)) === 'genai')
-  ok('selector hint explains what changes', await page.evaluate(() => document.querySelector('#hero').innerText.toLowerCase().includes('projets phares')))
+  ok('hero has no profile selector (video + profile only)', (await page.locator('#hero button[aria-pressed]').count()) === 0)
   ok('unknown slug → 404', (await page.goto(new URL('/projects/unknown-project/', BASE).toString())).status() === 404)
   await ctx.close()
 }

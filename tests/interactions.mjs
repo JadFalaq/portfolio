@@ -77,7 +77,7 @@ const ctxFor = (opts = {}) => browser.newContext({ viewport: { width: 1440, heig
 
   // Profile switch: new titles in the DOM synchronously, never below 40% opacity.
   await page.evaluate(() => scrollTo(0, 0))
-  const selector = page.getByRole('group', { name: 'Choisir un profil' })
+  const selector = page.locator('#profiles')
   await selector.getByRole('button').nth(1).click()
   const swap = await page.evaluate(() => {
     const art = document.querySelector('#projects article')
@@ -86,7 +86,8 @@ const ctxFor = (opts = {}) => browser.newContext({ viewport: { width: 1440, heig
   ok('profile switch: new featured content immediately', swap.title.includes('Renault'), swap.title)
   ok('profile switch: content never hidden', swap.opacity >= 0.4, `opacity=${swap.opacity}`)
   await page.waitForTimeout(400)
-  const ind = await selector.locator('button[aria-pressed="true"] span[aria-hidden="true"].absolute').count()
+  // Animated indicator lives in the navbar switcher (desktop).
+  const ind = await page.getByRole('group', { name: 'Profil' }).locator('button[aria-pressed="true"] span[aria-hidden="true"].absolute').count()
   ok('profile switch: animated indicator on active button', ind === 1)
 
   // Section indicator follows the scroll.
