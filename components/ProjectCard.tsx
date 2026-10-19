@@ -24,7 +24,7 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, noLi
             src={project.image}
             alt={project.title}
             fill
-            className="object-cover opacity-80 saturate-[0.85] transition-all duration-700 ease-out group-hover:scale-[1.04] group-hover:opacity-100 group-hover:saturate-100"
+            className="card-media object-cover opacity-85"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         ) : (
@@ -83,7 +83,7 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, noLi
             </a>
           )}
           {project.github && (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-accent transition-all duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-ink">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-accent transition-colors duration-200 ease-out group-hover:border-accent group-hover:bg-accent group-hover:text-ink">
               <ArrowUpRight size={16} />
             </span>
           )}
@@ -93,14 +93,14 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, noLi
   )
 
   const className =
-    'group relative block h-full overflow-hidden bg-ink transition-colors duration-500 hover:bg-surface md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]'
+    'card-lift card-flat group relative block h-full overflow-hidden bg-ink hover:bg-surface focus-within:bg-surface md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]'
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="h-full"
     >
       <div className={className}>

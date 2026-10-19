@@ -15,10 +15,10 @@ interface FeaturedProjectCardProps {
 export default function FeaturedProjectCard({ project, index, codeLabel, demoLabel, detailsLabel }: FeaturedProjectCardProps) {
   const number = String(index + 1).padStart(2, '0')
   const linkClass =
-    'inline-flex min-h-[40px] items-center gap-1.5 rounded-full border border-line px-4 font-mono text-[11px] uppercase tracking-[0.15em] text-paper transition-colors hover:border-accent hover:text-accent'
+    'group/link inline-flex min-h-[40px] items-center gap-1.5 rounded-full border border-line px-4 font-mono text-[11px] uppercase tracking-[0.15em] text-paper transition-colors duration-200 ease-out hover:border-accent hover:text-accent'
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden border border-line bg-ink transition-colors duration-500 hover:border-accent/40">
+    <article className="card-lift group flex h-full flex-col overflow-hidden rounded-sm border border-line bg-ink">
       <div className="relative aspect-[16/9] overflow-hidden bg-surface">
         {project.image ? (
           <Image
@@ -26,11 +26,11 @@ export default function FeaturedProjectCard({ project, index, codeLabel, demoLab
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover opacity-80 saturate-[0.85] transition-all duration-700 ease-out group-hover:scale-[1.04] group-hover:opacity-100 group-hover:saturate-100"
+            className="card-media object-cover opacity-85"
           />
         ) : project.logo ? (
           <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_50%_40%,rgb(var(--accent)_/_0.18),transparent_65%)]">
-            <div className="relative aspect-[2/1] w-[72%] overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent)_/_0.55),0_20px_45px_-12px_rgb(var(--accent)_/_0.5)] transition-transform duration-700 group-hover:scale-[1.04]">
+            <div className="card-media relative aspect-[2/1] w-[72%] overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent)_/_0.55),0_20px_45px_-12px_rgb(var(--accent)_/_0.5)]">
               <Image src={project.logo} alt="" fill sizes="(max-width: 768px) 70vw, 25vw" className="object-cover" />
             </div>
           </div>
@@ -80,14 +80,14 @@ export default function FeaturedProjectCard({ project, index, codeLabel, demoLab
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${demoLabel} — ${project.title}`}
-              className="btn-gold inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-4 font-mono text-[11px] uppercase tracking-[0.15em]"
+              className="btn-gold group/demo inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-4 font-mono text-[11px] uppercase tracking-[0.15em]"
             >
-              {demoLabel} <ArrowUpRight size={13} />
+              {demoLabel} <ArrowUpRight size={13} className="transition-transform duration-200 ease-out group-hover/demo:translate-x-0.5 group-hover/demo:-translate-y-0.5" />
             </a>
           )}
           {project.detailsHref && (
             <a href={project.detailsHref} className={linkClass}>
-              {detailsLabel} <ArrowDown size={13} />
+              {detailsLabel} <ArrowDown size={13} className="transition-transform duration-200 ease-out group-hover/link:translate-y-0.5" />
             </a>
           )}
         </div>

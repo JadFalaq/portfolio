@@ -43,10 +43,18 @@ const PROFILE_COLORS: Record<ProfileId, string> = {
 }
 
 const fadeUp = {
-  initial: { opacity: 0, y: 28 },
+  initial: { opacity: 0, y: 12 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.8, ease: EASE },
+  viewport: { once: true, margin: '0px 0px -10% 0px' },
+  transition: { duration: 0.5, ease: EASE },
+}
+
+// Profile switch: the new content is rendered immediately (no exit wait) and
+// only fades from 40% — never hidden, never delayed.
+const profileSwap = {
+  initial: { opacity: 0.4 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.22, ease: EASE },
 }
 
 function Eyebrow({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
@@ -94,9 +102,20 @@ export default function Portfolio() {
         }
       }
     }
+    let frame = 0
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        handleScroll()
+      })
+    }
     handleScroll()
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(frame)
+    }
   }, [])
 
   useEffect(() => {
@@ -190,14 +209,14 @@ export default function Portfolio() {
       {/* Nav                                                               */}
       {/* ---------------------------------------------------------------- */}
       <nav
-        className={`fixed top-0 z-50 w-full transition-all duration-500 ${
+        className={`fixed top-0 z-50 w-full transition-[background-color,border-color,backdrop-filter] duration-300 ease-out ${
           scrolled || menuOpen ? 'border-b border-line bg-ink/80 backdrop-blur-xl' : 'border-b border-transparent'
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-10">
           <a href="#hero" className="group flex items-baseline gap-2" aria-label="Jad Falaq — accueil">
             <span className="font-display text-3xl italic leading-none text-paper">J</span>
-            <span className="h-1.5 w-1.5 rounded-full bg-accent transition-transform group-hover:scale-150" />
+            <span className="h-1.5 w-1.5 rounded-full bg-accent transition-transform duration-200 ease-out group-hover:scale-150" />
             <span className="font-display text-3xl italic leading-none text-paper">F</span>
           </a>
 
@@ -218,16 +237,22 @@ export default function Portfolio() {
                     aria-pressed={active}
                     title={t.profiles[id].title}
                     onClick={() => selectProfile(id)}
-                    className={`flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] transition-all duration-300 ${
-                      active ? 'font-semibold' : 'border-transparent opacity-70 hover:bg-paper/[0.04] hover:opacity-100'
+                    className={`relative flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] transition-opacity duration-200 ease-out ${
+                      active ? 'font-semibold' : 'opacity-70 hover:opacity-100'
                     }`}
-                    style={active ? { color, borderColor: `${color}99`, backgroundColor: `${color}1F` } : { color }}
+                    style={{ color }}
                   >
-                    <span
-                      className="h-1.5 w-1.5 rounded-full transition-opacity"
-                      style={{ backgroundColor: color }}
-                    />
-                    {t.profiles[id].navLabel}
+                    {active && (
+                      <motion.span
+                        layoutId="nav-profile-indicator"
+                        aria-hidden="true"
+                        className="absolute inset-0 rounded-full border"
+                        style={{ borderColor: `${color}99`, backgroundColor: `${color}1F` }}
+                        transition={{ duration: 0.25, ease: EASE }}
+                      />
+                    )}
+                    <span className="relative h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />
+                    <span className="relative">{t.profiles[id].navLabel}</span>
                   </button>
                 )
               })}
@@ -237,21 +262,25 @@ export default function Portfolio() {
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className={`relative text-[13px] tracking-wide transition-colors ${
+                aria-current={activeSection === item.id ? 'location' : undefined}
+                className={`relative py-1 text-[13px] tracking-wide transition-colors duration-200 ease-out ${
                   activeSection === item.id ? 'text-paper' : 'text-muted hover:text-paper'
                 }`}
               >
                 {item.label}
-                <span
-                  className={`absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-accent transition-opacity ${
-                    activeSection === item.id ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
+                {activeSection === item.id && (
+                  <motion.span
+                    layoutId="nav-section-indicator"
+                    aria-hidden="true"
+                    className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-accent"
+                    transition={{ duration: 0.25, ease: EASE }}
+                  />
+                )}
               </a>
             ))}
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.15em] text-muted transition-colors hover:text-accent"
+              className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.15em] text-muted transition-colors duration-200 ease-out hover:text-accent"
               aria-label={language === 'fr' ? 'Switch to English' : 'Passer en français'}
             >
               <LanguagesIcon size={13} />
@@ -278,10 +307,11 @@ export default function Portfolio() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: EASE }}
+              transition={{ duration: 0.25, ease: EASE }}
               className="overflow-hidden border-t border-line lg:hidden"
             >
-              <div className="flex flex-col gap-6 px-5 py-6">
+              {/* Scrolls on its own if taller than the screen (small phones, landscape). */}
+              <div className="flex max-h-[calc(100svh-4.5rem)] flex-col gap-6 overflow-y-auto overscroll-contain px-5 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
                 <div>
                   <p className="font-display text-lg italic text-paper">{t.nav.profileMenu.heading}</p>
                   <div className="mt-3 border border-line">
@@ -291,7 +321,7 @@ export default function Portfolio() {
                         type="button"
                         aria-pressed={profile === id}
                         onClick={() => selectProfile(id)}
-                        className="flex w-full items-start gap-3 border-b border-line px-4 py-3.5 text-left last:border-b-0"
+                        className="flex w-full items-start gap-3 border-b border-line px-4 py-3.5 text-left transition-colors duration-200 ease-out last:border-b-0 hover:bg-paper/[0.03]"
                         style={profile === id ? { backgroundColor: `${PROFILE_COLORS[id]}14` } : undefined}
                       >
                         <span
@@ -337,11 +367,11 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       {/* Hero                                                              */}
       {/* ---------------------------------------------------------------- */}
-      {/* Intro animations are CSS (.hero-rise / .hero-line) so the hero is painted
+      {/* Entrance is CSS (.hero-rise: opacity + 8px, 450ms) so the hero is painted
           from the server HTML instead of waiting for hydration. */}
       <section id="hero" className="grain relative flex min-h-[100svh] items-center overflow-hidden pb-20 pt-28 md:pt-32">
-        {/* Atmosphere: drifting glow + editorial column rules */}
-        <div className="pointer-events-none absolute -right-40 -top-40 h-[42rem] w-[42rem] animate-drift rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.22),transparent_65%)] blur-2xl" />
+        {/* Atmosphere: soft glow + editorial column rules */}
+        <div className="pointer-events-none absolute -right-40 -top-40 h-[42rem] w-[42rem] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.22),transparent_65%)] blur-2xl" />
         <div className="pointer-events-none absolute -bottom-60 -left-40 h-[36rem] w-[36rem] rounded-full bg-[radial-gradient(circle,rgba(120,140,190,0.10),transparent_65%)] blur-2xl" />
         <div className="pointer-events-none absolute inset-0 mx-auto hidden max-w-7xl grid-cols-4 px-10 lg:grid">
           {[0, 1, 2, 3].map((i) => (
@@ -355,29 +385,25 @@ export default function Portfolio() {
           </div>
 
           <h1 className="mt-6">
-            <span className="hero-rise flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-paper md:text-3xl" style={{ animationDelay: '0.05s' }}>
+            <span className="hero-rise flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-paper md:text-3xl" style={{ animationDelay: '40ms' }}>
               Jad Falaq
               <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
             </span>
             <span className="mt-4 block font-display text-[2.75rem] leading-[0.95] tracking-[-0.02em] sm:text-6xl md:text-7xl lg:text-[7.25rem]">
-              <span className="block overflow-hidden">
-                <span className="hero-line block" style={{ animationDelay: '0.1s' }}>
-                  {t.hero.headline[0]}
-                </span>
+              <span className="hero-rise block" style={{ animationDelay: '80ms' }}>
+                {t.hero.headline[0]}
               </span>
-              <span className="block overflow-hidden pb-2">
-                <span className="hero-line block" style={{ animationDelay: '0.22s' }}>
-                  {t.hero.headline[1]} <em className="text-gold pr-2">{t.hero.headline[2]}</em>
-                </span>
+              <span className="hero-rise block pb-2" style={{ animationDelay: '140ms' }}>
+                {t.hero.headline[1]} <em className="text-gold pr-2">{t.hero.headline[2]}</em>
               </span>
             </span>
           </h1>
-          <p className="hero-rise mt-5 max-w-2xl text-base font-medium text-paper/85 md:text-lg" style={{ animationDelay: '0.3s' }}>
+          <p className="hero-rise mt-5 max-w-2xl text-base font-medium text-paper/85 md:text-lg" style={{ animationDelay: '200ms' }}>
             {t.hero.role}
           </p>
 
           <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-16">
-            <div className="hero-rise" style={{ animationDelay: '0.4s' }}>
+            <div className="hero-rise" style={{ animationDelay: '250ms' }}>
               <p className="max-w-xl text-base leading-relaxed text-muted md:text-lg">{t.hero.description}</p>
               <p className="mt-4 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-paper/70">
                 <Briefcase size={13} className="shrink-0 text-accent" aria-hidden="true" />
@@ -391,10 +417,7 @@ export default function Portfolio() {
                     className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/[0.06] px-3.5 py-1.5 text-xs text-paper/90"
                   >
                     {i === 0 && (
-                      <span className="relative flex h-2 w-2" aria-hidden="true">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
-                      </span>
+                      <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_3px_rgb(var(--accent)_/_0.18)]" aria-hidden="true" />
                     )}
                     {item}
                   </li>
@@ -404,32 +427,35 @@ export default function Portfolio() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <a
                   href="#projects"
-                  className="btn-gold flex min-h-[48px] items-center justify-center gap-2 rounded-full px-7 text-sm font-semibold tracking-wide shadow-[0_10px_40px_-10px_rgb(var(--accent)_/_0.6)] transition-transform hover:-translate-y-0.5"
+                  className="btn-gold group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-7 text-sm font-semibold tracking-wide shadow-[0_10px_30px_-12px_rgb(var(--accent)_/_0.55)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_14px_34px_-12px_rgb(var(--accent)_/_0.7)]"
                 >
                   {t.hero.ctaProjects}
-                  <ArrowDown size={16} aria-hidden="true" />
+                  <ArrowDown size={16} aria-hidden="true" className="icon-nudge-down" />
                 </a>
                 <a
                   href={p.cvFile}
                   download
                   aria-label={`${t.hero.ctaCV} — ${p.title} (PDF)`}
-                  className="flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-paper/25 px-7 text-sm tracking-wide text-paper transition-all hover:border-accent hover:text-accent"
+                  className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-paper/25 px-7 text-sm tracking-wide text-paper transition-colors duration-200 ease-out hover:border-accent hover:bg-accent/[0.06] hover:text-accent"
                 >
-                  <Download size={15} aria-hidden="true" />
+                  <Download size={15} aria-hidden="true" className="icon-nudge-down" />
                   {t.hero.ctaCV}
                 </a>
                 <a
                   href="#contact"
-                  className="flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-sm tracking-wide text-paper/85 underline-offset-4 transition-colors hover:text-accent hover:underline"
+                  className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-sm tracking-wide text-paper/85 transition-colors duration-200 ease-out hover:text-accent"
                 >
                   <Mail size={15} aria-hidden="true" />
-                  {t.hero.ctaContact}
+                  <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-200 ease-out group-hover:bg-[length:100%_1px]">
+                    {t.hero.ctaContact}
+                  </span>
+                  <ArrowUpRight size={14} aria-hidden="true" className="icon-nudge-right opacity-60" />
                 </a>
               </div>
             </div>
 
             {/* Profile selector — the "three profiles" promise, made interactive */}
-            <div className="hero-rise border-l border-accent/40 pl-5 md:pl-6" style={{ animationDelay: '0.55s' }}>
+            <div className="hero-rise border-l border-accent/40 pl-5 md:pl-6" style={{ animationDelay: '300ms' }}>
               <div className="flex items-end gap-4">
                 <span className="font-display text-6xl leading-none text-gold md:text-7xl">{t.hero.statNumber}</span>
                 <span className="pb-1">
@@ -447,17 +473,26 @@ export default function Portfolio() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => selectProfile(id)}
-                      className={`flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-[12px] leading-tight transition-all duration-300 sm:text-[13px] lg:flex-row lg:justify-start lg:gap-3 lg:px-4 lg:text-left lg:text-sm ${
-                        active ? 'font-semibold' : 'border-line text-paper/75 hover:border-paper/25 hover:text-paper'
+                      className={`relative flex min-h-[48px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center text-[12px] leading-tight transition-colors duration-200 ease-out sm:text-[13px] lg:flex-row lg:justify-start lg:gap-3 lg:px-4 lg:text-left lg:text-sm ${
+                        active ? 'border-transparent font-semibold' : 'border-line text-paper/75 hover:border-paper/25 hover:text-paper'
                       }`}
-                      style={active ? { color, borderColor: `${color}99`, backgroundColor: `${color}1A` } : undefined}
+                      style={active ? { color } : undefined}
                     >
-                      <span className="font-display text-lg italic leading-none" style={{ color, opacity: active ? 1 : 0.7 }} aria-hidden="true">
+                      {active && (
+                        <motion.span
+                          layoutId="hero-profile-indicator"
+                          aria-hidden="true"
+                          className="absolute inset-0 rounded-xl border"
+                          style={{ borderColor: `${color}99`, backgroundColor: `${color}1A` }}
+                          transition={{ duration: 0.25, ease: EASE }}
+                        />
+                      )}
+                      <span className="relative font-display text-lg italic leading-none" style={{ color, opacity: active ? 1 : 0.7 }} aria-hidden="true">
                         {ROMAN[index]}
                       </span>
-                      <span className="lg:hidden">{t.profiles[id].navLabel}</span>
-                      <span className="hidden flex-1 lg:inline">{t.profiles[id].title}</span>
-                      {active && <Check size={15} className="hidden shrink-0 lg:block" aria-hidden="true" />}
+                      <span className="relative lg:hidden">{t.profiles[id].navLabel}</span>
+                      <span className="relative hidden flex-1 lg:inline">{t.profiles[id].title}</span>
+                      {active && <Check size={15} className="relative hidden shrink-0 lg:block" aria-hidden="true" />}
                     </button>
                   )
                 })}
@@ -473,16 +508,9 @@ export default function Portfolio() {
         <a
           href="#profiles"
           aria-label="Scroll"
-          className="hero-rise absolute bottom-6 left-1/2 hidden -translate-x-1/2 lg:block"
-          style={{ animationDelay: '1.1s' }}
+          className="group absolute bottom-6 left-1/2 hidden -translate-x-1/2 p-2 lg:block"
         >
-          <span className="relative block h-12 w-px overflow-hidden bg-line">
-            <motion.span
-              className="absolute left-0 top-0 h-5 w-px bg-accent"
-              animate={{ y: [-20, 48] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </span>
+          <span className="block h-12 w-px bg-gradient-to-b from-accent/70 to-transparent transition-transform duration-200 ease-out group-hover:translate-y-1" />
         </a>
       </section>
 
@@ -531,12 +559,13 @@ export default function Portfolio() {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.7, delay: index * 0.1, ease: EASE }}
+                  transition={{ duration: 0.5, delay: index * 0.06, ease: EASE }}
+                  aria-pressed={active}
                   onClick={() => {
                     setProfile(id)
                     document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
                   }}
-                  className={`group relative flex min-h-[22rem] flex-col items-start overflow-hidden p-8 text-left transition-all duration-500 hover:-translate-y-1 ${
+                  className={`group relative flex min-h-[22rem] flex-col items-start overflow-hidden p-8 text-left transition-[transform,background-color,border-color,box-shadow] duration-[250ms] ease-out hover:-translate-y-[3px] focus-visible:-translate-y-[3px] ${
                     active
                       ? 'bg-ink text-paper shadow-[0_30px_60px_-25px_rgba(10,13,19,0.6)]'
                       : 'border border-lineInk bg-paper hover:border-accentDeep/40 hover:shadow-[0_25px_50px_-30px_rgba(10,13,19,0.35)]'
@@ -544,8 +573,8 @@ export default function Portfolio() {
                 >
                   {/* Gold top rule — full when active, grows on hover otherwise */}
                   <span
-                    className={`absolute left-0 top-0 h-[2px] bg-gradient-to-r from-accentDeep via-accent to-accentDeep transition-all duration-700 ${
-                      active ? 'w-full' : 'w-0 group-hover:w-full'
+                    className={`absolute left-0 top-0 h-[2px] bg-gradient-to-r from-accentDeep via-accent to-accentDeep transition-[width] duration-300 ease-out ${
+                      active ? 'w-full' : 'w-0 group-hover:w-full group-focus-visible:w-full'
                     }`}
                   />
                   {active && (
@@ -577,7 +606,7 @@ export default function Portfolio() {
                     }`}
                   >
                     {t.profilePicker.enterLabel}
-                    <ArrowUpRight size={13} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    <ArrowUpRight size={13} className="icon-nudge-right" />
                   </span>
                 </motion.button>
               )
@@ -601,7 +630,7 @@ export default function Portfolio() {
                   src="/profil.jpg"
                   alt="Jad Falaq"
                   fill
-                  className="object-cover grayscale transition-all duration-700 group-hover:scale-[1.03] group-hover:grayscale-0"
+                  className="object-cover grayscale transition-[transform,filter] duration-300 ease-out group-hover:scale-[1.02] group-hover:grayscale-0"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
               </div>
@@ -621,32 +650,22 @@ export default function Portfolio() {
               <span className="pointer-events-none absolute -left-2 -top-10 font-display text-[9rem] leading-none text-accent/15 md:-left-8">
                 &ldquo;
               </span>
-              <AnimatePresence mode="wait">
                 <motion.h2
                   key={profile + '-quote'}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -14 }}
-                  transition={{ duration: 0.5, ease: EASE }}
+                  {...profileSwap}
                   className="relative font-display text-4xl italic leading-[1.15] text-paper sm:text-5xl"
                 >
                   {p.bioQuote}
                 </motion.h2>
-              </AnimatePresence>
             </div>
 
-            <AnimatePresence mode="wait">
               <motion.p
                 key={profile + '-summary'}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
+                {...profileSwap}
                 className="mt-8 max-w-2xl text-base leading-relaxed text-muted md:text-[17px]"
               >
                 {p.summary}
               </motion.p>
-            </AnimatePresence>
 
             <div className="mt-8 flex flex-wrap gap-2">
               {p.keywords.map((k) => (
@@ -676,17 +695,13 @@ export default function Portfolio() {
           <motion.h2 {...fadeUp} className="font-display text-4xl sm:text-5xl">
             {t.skillsHeading}
           </motion.h2>
-          <AnimatePresence mode="wait">
             <motion.div
               key={profile + '-skills'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              {...profileSwap}
               className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
             >
               {p.skills.map((group, i) => (
-                <div key={group.heading} className="group bg-surface p-7 transition-colors duration-500 hover:bg-ink">
+                <div key={group.heading} className="group bg-surface p-7 transition-colors duration-200 ease-out hover:bg-ink">
                   <div className="flex items-baseline gap-3">
                     <span className="font-display text-lg italic text-accent/60">{String(i + 1).padStart(2, '0')}</span>
                     <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper">{group.heading}</h3>
@@ -704,7 +719,6 @@ export default function Portfolio() {
                 </div>
               ))}
             </motion.div>
-          </AnimatePresence>
         </div>
       </section>
 
@@ -717,24 +731,25 @@ export default function Portfolio() {
             {t.experienceHeading}
           </motion.h2>
 
-          <AnimatePresence mode="wait">
             <motion.div
               key={profile + '-exp'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              {...profileSwap}
               className="relative mt-16"
             >
               <div className="absolute bottom-0 left-[7px] top-2 w-px bg-gradient-to-b from-accent/70 via-line to-transparent md:left-[calc(240px+7px)]" />
               <div className="space-y-16">
                 {p.experience.map((exp, index) => (
-                  <div key={index} className="relative grid gap-6 pl-10 md:grid-cols-[240px_1fr] md:gap-0 md:pl-0">
-                    <span className="absolute left-0 top-2 flex h-[15px] w-[15px] items-center justify-center rounded-full border border-accent bg-ink md:left-[240px]">
-                      <span className="h-[5px] w-[5px] rounded-full bg-accent" />
+                  <motion.div
+                    key={index}
+                    {...fadeUp}
+                    className="group/exp relative grid gap-5 pl-8 md:grid-cols-[240px_1fr] md:gap-0 md:pl-0"
+                  >
+                    {/* Timeline node: fills in when its card is hovered or focused. */}
+                    <span className="absolute left-0 top-0.5 flex h-[15px] w-[15px] items-center justify-center rounded-full border border-accent bg-ink transition-colors duration-200 ease-out group-hover/exp:bg-accent/20 group-focus-within/exp:bg-accent/20 md:left-[240px] md:top-8">
+                      <span className="h-[5px] w-[5px] rounded-full bg-accent transition-transform duration-200 ease-out group-hover/exp:scale-150 group-focus-within/exp:scale-150" />
                     </span>
 
-                    <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted md:pr-10 md:text-right">
+                    <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted md:pr-10 md:pt-7 md:text-right">
                       <p className="flex items-center gap-1.5 text-paper md:justify-end">
                         <Calendar size={12} className="text-accent" /> {exp.period}
                       </p>
@@ -743,11 +758,12 @@ export default function Portfolio() {
                       </p>
                     </div>
 
-                    <div className="md:pl-14">
+                    {/* Everything stays visible — the card only sharpens its border on hover/focus. */}
+                    <div className="rounded-sm border border-line bg-surface/40 p-5 transition-colors duration-[250ms] ease-out group-hover/exp:border-accent/35 group-hover/exp:bg-surface/70 sm:p-6 md:ml-14 md:p-8">
                       <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
                         {exp.logo ? (
                           // Logos are photos with the wordmark centered: a 2:1 cover crop keeps the name large.
-                          <div className="relative aspect-[2/1] w-44 shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent)_/_0.5),0_18px_40px_-12px_rgb(var(--accent)_/_0.45)] transition-transform duration-500 hover:scale-[1.03] md:w-52">
+                          <div className="relative aspect-[2/1] w-44 shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent)_/_0.5),0_18px_40px_-12px_rgb(var(--accent)_/_0.45)] md:w-52">
                             <Image src={exp.logo} alt={exp.company} fill sizes="208px" className="object-cover" />
                           </div>
                         ) : (
@@ -783,11 +799,10 @@ export default function Portfolio() {
                         ))}
                       </ul>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
-          </AnimatePresence>
         </div>
       </section>
 
@@ -806,13 +821,9 @@ export default function Portfolio() {
             </p>
           </motion.div>
 
-          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={profile + '-featured'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              {...profileSwap}
               className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
             >
               {featuredProjects.map((project, index) => (
@@ -826,7 +837,6 @@ export default function Portfolio() {
                 />
               ))}
             </motion.div>
-          </AnimatePresence>
 
           <div className="mt-12 flex justify-center">
             <button
@@ -885,7 +895,7 @@ export default function Portfolio() {
             <a
               href={p.cvFile}
               download
-              className="group flex w-fit items-center gap-3 rounded-full bg-ink py-2 pl-6 pr-2 text-sm text-paper transition-all hover:shadow-[0_15px_40px_-15px_rgba(10,13,19,0.6)]"
+              className="group flex w-fit items-center gap-3 rounded-full bg-ink py-2 pl-6 pr-2 text-sm text-paper transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_15px_40px_-15px_rgba(10,13,19,0.6)]"
             >
               <span>
                 {t.cv.downloadLabel} <span className="font-display text-base italic text-accent">— {p.title}</span>
@@ -953,7 +963,7 @@ export default function Portfolio() {
                     <div className="flex flex-col items-start gap-5 sm:flex-row">
                       {edu.logo && (
                         // Natural aspect ratio (4:3 and square) so neither logo is cropped.
-                        <div className="shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent-deep)_/_0.45),0_16px_34px_-14px_rgb(var(--accent-deep)_/_0.55)] transition-transform duration-500 hover:scale-[1.03]">
+                        <div className="shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent-deep)_/_0.45),0_16px_34px_-14px_rgb(var(--accent-deep)_/_0.55)] transition-transform duration-[250ms] ease-out hover:scale-[1.02]">
                           <Image
                             src={edu.logo.src}
                             alt={edu.school.split(' — ')[0]}
@@ -982,13 +992,9 @@ export default function Portfolio() {
               <h3 className="flex items-center gap-2 pt-6 font-mono text-[10px] uppercase tracking-[0.25em] text-accentDeep">
                 <Award size={13} /> {t.nav.projects}
               </h3>
-              <AnimatePresence mode="wait">
                 <motion.div
                   key={profile + '-cv-projects'}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  {...profileSwap}
                   className="divide-y divide-lineInk border-y border-lineInk"
                 >
                   {curatedProjects.map((project) => (
@@ -1013,7 +1019,6 @@ export default function Portfolio() {
                     </div>
                   ))}
                 </motion.div>
-              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -1023,7 +1028,7 @@ export default function Portfolio() {
       {/* Contact                                                           */}
       {/* ---------------------------------------------------------------- */}
       <section id="contact" className="grain relative overflow-hidden py-24 md:py-36">
-        <div className="pointer-events-none absolute -bottom-40 right-0 h-[40rem] w-[40rem] animate-drift rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.16),transparent_65%)] blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-40 right-0 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.16),transparent_65%)] blur-2xl" />
         <div className="relative mx-auto max-w-7xl px-5 md:px-10">
           <motion.div {...fadeUp}>
             <Eyebrow>{t.contact.eyebrow}</Eyebrow>
@@ -1053,15 +1058,15 @@ export default function Portfolio() {
                   key={label}
                   href={href}
                   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="group flex items-center justify-between border-b border-line py-6 transition-colors hover:border-accent/50"
+                  className="group flex items-center justify-between border-b border-line py-6 transition-colors duration-200 ease-out hover:border-accent/50"
                 >
                   <span className="flex items-center gap-4">
                     <Icon size={18} className="text-accent" />
-                    <span className="font-display text-2xl text-paper transition-transform duration-300 group-hover:translate-x-1 md:text-3xl">
+                    <span className="font-display text-2xl text-paper transition-transform duration-200 ease-out group-hover:translate-x-1 md:text-3xl">
                       {label}
                     </span>
                   </span>
-                  <ArrowUpRight size={18} className="text-muted transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                  <ArrowUpRight size={18} className="icon-nudge-right text-muted group-hover:text-accent" />
                 </a>
               ))}
             </motion.div>
