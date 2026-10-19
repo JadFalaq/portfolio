@@ -493,6 +493,9 @@ const projectsEn: Record<string, ProjectText> = {
   },
 }
 
+// Public projects (experience-only entries such as Renault Digital excluded).
+const projectCount = Object.values(projectMeta).filter((m) => !m.detailsHref).length
+
 function withMeta(texts: Record<string, ProjectText>): Record<string, Project> {
   return Object.fromEntries(
     Object.entries(texts).map(([id, text]) => [id, { id, ...projectMeta[id], ...text }]),
@@ -542,7 +545,7 @@ const fr: SiteContent = {
     stats: [
       { value: '2027', label: 'Diplôme ENSIAS' },
       { value: '03', label: 'Profils professionnels' },
-      { value: '14', label: 'Projets réalisés' },
+      { value: String(projectCount).padStart(2, '0'), label: 'Projets réalisés' },
     ],
     location: 'Grenoble, France',
     secondLocation: 'Casablanca, Maroc',
@@ -805,7 +808,7 @@ const en: SiteContent = {
     stats: [
       { value: '2027', label: 'ENSIAS graduation' },
       { value: '03', label: 'Professional profiles' },
-      { value: '14', label: 'Delivered projects' },
+      { value: String(projectCount).padStart(2, '0'), label: 'Delivered projects' },
     ],
     location: 'Grenoble, France',
     secondLocation: 'Casablanca, Morocco',

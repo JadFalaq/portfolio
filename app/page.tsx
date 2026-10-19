@@ -593,7 +593,7 @@ export default function Portfolio() {
         <div className="pointer-events-none absolute -left-40 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.08),transparent_65%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-16 px-5 md:grid-cols-[340px_1fr] md:gap-20 md:px-10">
           <motion.div {...fadeUp}>
-            <div className="relative w-full max-w-[20rem]">
+            <div className="relative w-full max-w-[13rem] sm:max-w-[20rem]">
               {/* Offset gold frame */}
               <div className="absolute inset-0 translate-x-4 translate-y-4 border border-accent/50" />
               <div className="group relative aspect-[4/5] overflow-hidden bg-surface">
@@ -659,8 +659,8 @@ export default function Portfolio() {
             <div className="mt-14 grid grid-cols-3 border-t border-line">
               {t.bio.stats.map((s, i) => (
                 <div key={s.label} className={`pt-7 ${i > 0 ? 'border-l border-line pl-5 md:pl-8' : ''}`}>
-                  <div className="font-display text-5xl leading-none text-gold md:text-6xl">{s.value}</div>
-                  <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{s.label}</div>
+                  <div className="font-display text-4xl leading-none text-gold sm:text-5xl md:text-6xl">{s.value}</div>
+                  <div className="mt-3 break-words font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-muted sm:text-[10px] sm:tracking-[0.2em]">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -767,7 +767,18 @@ export default function Portfolio() {
                         {exp.description.map((item, i) => (
                           <li key={i} className="flex items-start gap-4 text-[15px] leading-relaxed text-muted">
                             <span className="mt-[0.7em] h-px w-4 shrink-0 bg-accent/70" />
-                            {item}
+                            <span>
+                              {(() => {
+                                const m = item.match(/^([^:]{3,60}?)\s?:\s/)
+                                return m ? (
+                                  <>
+                                    <strong className="font-semibold text-paper">{m[1]}</strong> — {item.slice(m[0].length)}
+                                  </>
+                                ) : (
+                                  item
+                                )
+                              })()}
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -981,21 +992,24 @@ export default function Portfolio() {
                   className="divide-y divide-lineInk border-y border-lineInk"
                 >
                   {curatedProjects.map((project) => (
-                    <div key={project.id} className="py-5">
-                      <div className="flex items-start justify-between gap-3">
-                        <h4 className="font-display text-xl leading-tight">{project.title}</h4>
-                        {project.github && (
-                          <a
-                            href={project.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex shrink-0 items-center gap-1 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk hover:text-accentDeep"
-                          >
-                            <Github size={12} /> {contact.github.replace('github.com/', '')}
-                          </a>
-                        )}
+                    <div key={project.id} className="flex items-center justify-between gap-4 py-3.5">
+                      <div className="min-w-0">
+                        <h4 className="font-display text-lg leading-snug">{project.title}</h4>
+                        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk">
+                          {project.category} · {project.year}
+                        </p>
                       </div>
-                      <p className="mt-2 text-xs leading-relaxed text-mutedInk">{project.description}</p>
+                      {project.github && (
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`GitHub — ${project.title}`}
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-lineInk text-mutedInk transition-colors hover:border-accentDeep hover:text-accentDeep"
+                        >
+                          <Github size={15} />
+                        </a>
+                      )}
                     </div>
                   ))}
                 </motion.div>
@@ -1054,26 +1068,38 @@ export default function Portfolio() {
 
             <motion.form {...fadeUp} onSubmit={handleFormSubmit} className="border border-line bg-surface/60 p-7 backdrop-blur md:p-10">
               <div className="grid gap-2 sm:grid-cols-2 sm:gap-8">
+                <div>
+                <label htmlFor="contact-name" className="sr-only">{t.contact.form.name}</label>
                 <input
+                  id="contact-name"
                   type="text"
                   name="name"
+                  autoComplete="name"
                   required
                   value={formData.name}
                   onChange={handleFormChange}
                   placeholder={t.contact.form.name}
                   className={inputClass}
                 />
+                </div>
+                <div>
+                <label htmlFor="contact-email" className="sr-only">{t.contact.form.email}</label>
                 <input
+                  id="contact-email"
                   type="email"
                   name="email"
+                  autoComplete="email"
                   required
                   value={formData.email}
                   onChange={handleFormChange}
                   placeholder={t.contact.form.email}
                   className={inputClass}
                 />
+                </div>
               </div>
+              <label htmlFor="contact-message" className="sr-only">{t.contact.form.message}</label>
               <textarea
+                id="contact-message"
                 rows={4}
                 name="message"
                 required
@@ -1091,6 +1117,7 @@ export default function Portfolio() {
                 {formStatus === 'sending' ? t.contact.form.sending : t.contact.form.submit}
                 {formStatus !== 'sending' && <ArrowUpRight size={16} />}
               </button>
+              <div aria-live="polite">
               {formStatus === 'success' && (
                 <p className="mt-5 flex items-center gap-2 text-sm text-accent">
                   <CheckCircle2 size={16} /> {t.contact.form.success}
@@ -1101,6 +1128,7 @@ export default function Portfolio() {
                   <AlertCircle size={16} /> {t.contact.form.error}
                 </p>
               )}
+              </div>
             </motion.form>
           </div>
         </div>
@@ -1113,6 +1141,20 @@ export default function Portfolio() {
         <div className="mx-auto max-w-7xl px-5 md:px-10">
           <div className="flex flex-col items-start justify-between gap-6 font-mono text-[10px] uppercase tracking-[0.2em] text-muted md:flex-row md:items-center">
             <span>{t.footer}</span>
+            <nav aria-label="Contact" className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <a href={`mailto:${contact.email}`} className="transition-colors hover:text-accent">
+                Email
+              </a>
+              <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-accent">
+                LinkedIn
+              </a>
+              <a href={contact.githubUrl} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-accent">
+                GitHub
+              </a>
+              <a href={p.cvFile} download className="flex items-center gap-1.5 text-paper transition-colors hover:text-accent">
+                <Download size={12} aria-hidden="true" /> CV
+              </a>
+            </nav>
             <a href="#hero" className="group flex items-center gap-2 transition-colors hover:text-accent">
               <ArrowUp size={13} className="transition-transform group-hover:-translate-y-0.5" />
               Top
