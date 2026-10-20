@@ -30,7 +30,7 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
       ) : project.diagram === 'akwa' ? (
         <div className="relative z-10 p-3"><AuditPresentation compact /></div>
       ) : (
-      <div className="relative aspect-[16/10] overflow-hidden bg-surface">
+      <div className="relative aspect-[16/7] overflow-hidden bg-surface sm:aspect-[16/10]">
         {project.image ? (
           <Image
             src={project.image}
@@ -43,7 +43,7 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
           <div className="absolute inset-0 overflow-hidden pt-12">{visual}</div>
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgb(var(--accent)_/_0.12),transparent_60%)]">
-            <span className="font-display text-8xl italic text-accent/25">{number}</span>
+            <span className="font-display text-6xl italic text-accent/25 sm:text-8xl">{number}</span>
           </div>
         )}
         {/* Fades the image into the text column: downward on mobile, rightward on desktop */}
@@ -60,14 +60,14 @@ export default function ProjectCard({ project, index, codeLabel, demoLabel, case
 
       )}
 
-      <div className="relative flex flex-col justify-center flex-1 px-6 pb-6 pt-5">
+      <div className="relative flex flex-1 flex-col justify-center px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">{project.status}</p>
-        <h3 className="mt-3 font-display text-2xl leading-tight text-paper md:text-[1.65rem]">
+        <h3 className="mt-2 font-display text-lg leading-tight sm:mt-3 sm:text-2xl text-paper md:text-[1.65rem]">
           {project.title}
         </h3>
-        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted md:text-[15px]">{project.problem ?? project.description}</p>
+        <p className="mt-2 line-clamp-3 max-w-3xl text-[13px] leading-relaxed text-muted sm:mt-3 sm:line-clamp-none sm:text-sm md:text-[15px]">{project.problem ?? project.description}</p>
 
-        <div className="mb-6 mt-5 flex flex-wrap gap-x-4 gap-y-1.5">
+        <div className="mb-4 mt-3 flex flex-wrap gap-x-3 gap-y-1 sm:mb-6 sm:mt-5 sm:gap-x-4 sm:gap-y-1.5">
           {project.technologies.map((tech) => (
             <span key={tech} className="font-mono text-[11px] text-paper/50">
               {tech}

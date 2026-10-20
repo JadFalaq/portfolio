@@ -87,22 +87,26 @@ function SectionHeader({
   children?: React.ReactNode
 }) {
   return (
-    <motion.div {...fadeUp} className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+    <motion.div {...fadeUp} className="flex flex-col justify-between gap-4 md:flex-row md:items-end md:gap-6">
       <div>
         <Eyebrow light={light}>{eyebrow}</Eyebrow>
-        <h2 className="t-h2 mt-5">{title}</h2>
-        {intro && <p className={`t-intro mt-5 ${light ? 'text-mutedInk' : 'text-muted'}`}>{intro}</p>}
+        <h2 className="t-h2 mt-3 md:mt-5">{title}</h2>
+        {intro && <p className={`t-intro mt-3 md:mt-5 ${light ? 'text-mutedInk' : 'text-muted'}`}>{intro}</p>}
       </div>
       {children}
     </motion.div>
   )
 }
 
+// On phones, each experience shows its first bullets; the rest opens on demand.
+const MOBILE_BULLETS = 2
+
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState('hero')
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [showAllProjects, setShowAllProjects] = useState(false)
+  const [expandedExp, setExpandedExp] = useState<Set<number>>(new Set())
   const { language, toggleLanguage } = useLanguage()
   const { profile, setProfile } = useProfile()
   const t = siteContent[language]
@@ -486,10 +490,10 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       <section id="profiles" className="grain relative bg-paper section-y text-ink">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
-          <motion.div {...fadeUp} className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+          <motion.div {...fadeUp} className="flex flex-col justify-between gap-4 md:flex-row md:items-end md:gap-8">
             <div>
               <Eyebrow light>{t.profilePicker.eyebrow}</Eyebrow>
-              <h2 className="t-h2 mt-5">
+              <h2 className="t-h2 mt-3 md:mt-5">
                 {t.profilePicker.heading[0]}
                 <br />
                 <em className="text-accentDeep">{t.profilePicker.heading[1]}</em>
@@ -498,7 +502,7 @@ export default function Portfolio() {
             <p className="max-w-xs text-sm leading-relaxed text-mutedInk">{t.profilePicker.description}</p>
           </motion.div>
 
-          <div className="mt-16 grid gap-5 md:grid-cols-3">
+          <div className="mt-8 grid gap-3 md:mt-16 md:grid-cols-3 md:gap-5">
             {PROFILE_IDS.map((id, index) => {
               const active = profile === id
               return (
@@ -514,7 +518,7 @@ export default function Portfolio() {
                     setProfile(id)
                     document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
                   }}
-                  className={`group relative flex min-h-[22rem] flex-col items-start overflow-hidden p-8 text-left transition-[transform,background-color,border-color,box-shadow] duration-[250ms] ease-out hover:-translate-y-[3px] focus-visible:-translate-y-[3px] ${
+                  className={`group relative flex flex-col items-start overflow-hidden p-5 text-left md:min-h-[22rem] md:p-8 transition-[transform,background-color,border-color,box-shadow] duration-[250ms] ease-out hover:-translate-y-[3px] focus-visible:-translate-y-[3px] ${
                     active
                       ? 'bg-ink text-paper shadow-[0_30px_60px_-25px_rgba(10,13,19,0.6)]'
                       : 'border border-lineInk bg-paper hover:border-accentDeep/40 hover:shadow-[0_25px_50px_-30px_rgba(10,13,19,0.35)]'
@@ -532,7 +536,7 @@ export default function Portfolio() {
 
                   <div className="flex w-full items-start justify-between">
                     <span
-                      className={`font-display text-7xl italic leading-none ${
+                      className={`font-display text-4xl italic leading-none md:text-7xl ${
                         active ? 'text-gold' : 'text-accentDeep/40 transition-colors group-hover:text-accentDeep'
                       }`}
                     >
@@ -545,12 +549,12 @@ export default function Portfolio() {
                     )}
                   </div>
 
-                  <span className="mt-auto pt-10 font-display text-3xl leading-tight">{t.profiles[id].title}</span>
-                  <p className={`mt-3 text-sm leading-relaxed ${active ? 'text-muted' : 'text-mutedInk'}`}>
+                  <span className="mt-auto pt-3 font-display text-2xl leading-tight md:pt-10 md:text-3xl">{t.profiles[id].title}</span>
+                  <p className={`mt-2 text-[13px] leading-relaxed md:mt-3 md:text-sm ${active ? 'text-muted' : 'text-mutedInk'}`}>
                     {t.profiles[id].pickerDescription}
                   </p>
                   <span
-                    className={`mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] ${
+                    className={`mt-4 inline-flex items-center gap-2 font-mono md:mt-7 text-[10px] uppercase tracking-[0.2em] ${
                       active ? 'text-accent' : 'text-ink'
                     }`}
                   >
@@ -569,11 +573,11 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       <section id="about" className="relative overflow-hidden section-y">
         <div className="pointer-events-none absolute -left-40 top-1/3 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)_/_0.08),transparent_65%)]" />
-        <div className="relative mx-auto grid max-w-7xl gap-16 px-5 md:grid-cols-[340px_1fr] md:gap-20 md:px-10">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-5 md:grid-cols-[340px_1fr] md:gap-20 md:px-10">
           <motion.div {...fadeUp}>
-            <div className="relative w-full max-w-[13rem] sm:max-w-[20rem]">
+            <div className="relative w-full max-w-[9rem] sm:max-w-[20rem]">
               {/* Offset gold frame */}
-              <div className="absolute inset-0 translate-x-4 translate-y-4 border border-accent/50" />
+              <div className="absolute inset-0 translate-x-2.5 translate-y-2.5 border md:translate-x-4 md:translate-y-4 border-accent/50" />
               <div className="group relative aspect-[4/5] overflow-hidden bg-surface">
                 <Image
                   src="/profil.jpg"
@@ -592,14 +596,14 @@ export default function Portfolio() {
               <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.25em] text-accent">{t.bio.tag}</p>
             </motion.div>
 
-            <div className="relative mt-8">
-              <span className="pointer-events-none absolute -left-2 -top-10 font-display text-[9rem] leading-none text-accent/15 md:-left-8">
+            <div className="relative mt-5 md:mt-8">
+              <span className="pointer-events-none absolute -left-2 -top-6 font-display text-[5rem] md:-top-10 md:text-[9rem] leading-none text-accent/15 md:-left-8">
                 &ldquo;
               </span>
                 <motion.h2
                   key={profile + '-quote'}
                   {...profileSwap}
-                  className="relative text-[clamp(1.75rem,3.4vw,2.75rem)] font-medium italic leading-[1.2] tracking-[-0.03em] text-paper"
+                  className="relative text-[clamp(1.35rem,3.4vw,2.75rem)] font-medium italic leading-[1.2] tracking-[-0.03em] text-paper"
                 >
                   {p.bioQuote}
                 </motion.h2>
@@ -608,23 +612,23 @@ export default function Portfolio() {
               <motion.p
                 key={profile + '-summary'}
                 {...profileSwap}
-                className="mt-8 max-w-2xl text-base leading-relaxed text-muted md:text-[17px]"
+                className="mt-4 max-w-2xl text-[15px] leading-relaxed text-muted md:mt-8 md:text-[17px]"
               >
                 {p.summary}
               </motion.p>
 
-            <div className="mt-8 flex flex-wrap gap-2">
+            <div className="mt-5 flex flex-wrap gap-1.5 md:mt-8 md:gap-2">
               {p.keywords.map((k) => (
-                <span key={k} className="rounded-full border border-accent/25 bg-accent/[0.05] px-4 py-1.5 text-xs text-paper/80">
+                <span key={k} className="rounded-full border border-accent/25 bg-accent/[0.05] px-3 py-1 text-xs md:px-4 md:py-1.5 text-paper/80">
                   {k}
                 </span>
               ))}
             </div>
 
-            <div className="mt-14 grid grid-cols-3 border-t border-line">
+            <div className="mt-8 grid grid-cols-3 border-t border-line md:mt-14">
               {t.bio.stats.map((s, i) => (
-                <div key={s.label} className={`pt-7 ${i > 0 ? 'border-l border-line pl-5 md:pl-8' : ''}`}>
-                  <div className="font-display text-4xl leading-none text-gold sm:text-5xl md:text-6xl">{s.value}</div>
+                <div key={s.label} className={`pt-5 md:pt-7 ${i > 0 ? 'border-l border-line pl-5 md:pl-8' : ''}`}>
+                  <div className="font-display text-3xl leading-none text-gold sm:text-5xl md:text-6xl">{s.value}</div>
                   <div className="mt-3 break-words font-mono text-[9px] uppercase leading-relaxed tracking-[0.12em] text-muted sm:text-[10px] sm:tracking-[0.2em]">{s.label}</div>
                 </div>
               ))}
@@ -643,15 +647,15 @@ export default function Portfolio() {
             <motion.div
               key={profile + '-exp'}
               {...profileSwap}
-              className="relative mt-16"
+              className="relative mt-8 md:mt-16"
             >
               <div className="absolute bottom-0 left-[7px] top-2 w-px bg-gradient-to-b from-accent/70 via-line to-transparent md:left-[calc(240px+7px)]" />
-              <div className="space-y-16">
+              <div className="space-y-8 md:space-y-16">
                 {p.experience.map((exp, index) => (
                   <motion.div
                     key={index}
                     {...fadeUp}
-                    className="group/exp relative grid gap-5 pl-8 md:grid-cols-[240px_minmax(0,1fr)] md:gap-0 md:pl-0"
+                    className="group/exp relative grid gap-3 pl-7 md:grid-cols-[240px_minmax(0,1fr)] md:gap-0 md:pl-0"
                   >
                     {/* Timeline node: fills in when its card is hovered or focused. */}
                     <span className="absolute left-0 top-0.5 flex h-[15px] w-[15px] items-center justify-center rounded-full border border-accent bg-ink transition-colors duration-200 ease-out group-hover/exp:bg-accent/20 group-focus-within/exp:bg-accent/20 md:left-[240px] md:top-8">
@@ -665,29 +669,29 @@ export default function Portfolio() {
                     </div>
 
                     {/* Everything stays visible — the card only sharpens its border on hover/focus. */}
-                    <div className="rounded-sm border border-line bg-surface/40 p-5 transition-colors duration-[250ms] ease-out group-hover/exp:border-accent/35 group-hover/exp:bg-surface/70 sm:p-6 md:ml-14 md:p-8">
-                      <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+                    <div className="rounded-sm border border-line bg-surface/40 p-4 transition-colors duration-[250ms] ease-out group-hover/exp:border-accent/35 group-hover/exp:bg-surface/70 sm:p-6 md:ml-14 md:p-8">
+                      <div className="flex items-center gap-3 sm:gap-5">
                         {exp.logo ? (
                           // Logos are photos with the wordmark centered: a 2:1 cover crop keeps the name large.
-                          <div className="relative aspect-[2/1] w-44 shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent)_/_0.5),0_18px_40px_-12px_rgb(var(--accent)_/_0.45)] md:w-52">
+                          <div className="relative aspect-[2/1] w-24 shrink-0 overflow-hidden rounded-lg bg-white sm:w-44 sm:rounded-xl shadow-[0_0_0_1px_rgb(var(--accent)_/_0.5),0_18px_40px_-12px_rgb(var(--accent)_/_0.45)] md:w-52">
                             <Image src={exp.logo} alt={exp.company} fill sizes="208px" className="object-cover" />
                           </div>
                         ) : (
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-line">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line md:h-12 md:w-12">
                             <Briefcase size={18} className="text-accent" />
                           </div>
                         )}
-                        <div>
-                          <h3 className="font-display text-2xl leading-tight text-paper md:text-3xl">{exp.title}</h3>
-                          <p className="mt-1 text-sm">
+                        <div className="min-w-0">
+                          <h3 className="font-display text-lg leading-tight text-paper sm:text-2xl md:text-3xl">{exp.title}</h3>
+                          <p className="mt-1 text-[13px] sm:text-sm">
                             <span className="text-accent">{exp.company}</span>
                             <span className="text-muted"> · {exp.type}</span>
                           </p>
                         </div>
                       </div>
-                      <ul className="mt-7 space-y-4">
+                      <ul className="mt-4 space-y-2.5 md:mt-7 md:space-y-4">
                         {exp.description.map((item, i) => (
-                          <li key={i} className="flex items-start gap-4 text-[15px] leading-relaxed text-muted">
+                          <li key={i} className={`flex items-start gap-3 text-sm leading-relaxed text-muted md:gap-4 md:text-[15px] ${i >= MOBILE_BULLETS && !expandedExp.has(index) ? 'max-md:hidden' : ''}`}>
                             <span className="mt-[0.7em] h-px w-4 shrink-0 bg-accent/70" />
                             <span>
                               {(() => {
@@ -704,6 +708,26 @@ export default function Portfolio() {
                           </li>
                         ))}
                       </ul>
+                      {exp.description.length > MOBILE_BULLETS && (
+                        <button
+                          type="button"
+                          aria-expanded={expandedExp.has(index)}
+                          onClick={() =>
+                            setExpandedExp((prev) => {
+                              const next = new Set(prev)
+                              if (next.has(index)) next.delete(index)
+                              else next.add(index)
+                              return next
+                            })
+                          }
+                          className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-accent md:hidden"
+                        >
+                          {expandedExp.has(index)
+                            ? language === 'fr' ? 'Voir moins' : 'Show less'
+                            : `${language === 'fr' ? 'Voir plus' : 'Show more'} (+${exp.description.length - MOBILE_BULLETS})`}
+                          <ArrowDown size={12} aria-hidden="true" className={`transition-transform duration-200 ${expandedExp.has(index) ? 'rotate-180' : ''}`} />
+                        </button>
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -731,7 +755,7 @@ export default function Portfolio() {
             }
           />
 
-          <motion.div key={profile + '-featured'} {...profileSwap} className="mt-12 md:mt-14">
+          <motion.div key={profile + '-featured'} {...profileSwap} className="mt-8 md:mt-14">
             <FeaturedShowcase
               projects={featuredProjects}
               diagrams={{ akwa: akwaCaseStudy[language].pipeline }}
@@ -745,7 +769,7 @@ export default function Portfolio() {
             />
           </motion.div>
 
-          <div className="mt-12 flex justify-center">
+          <div className="mt-8 flex justify-center md:mt-12">
             <button
               type="button"
               onClick={() => setShowAllProjects((v) => !v)}
@@ -764,11 +788,11 @@ export default function Portfolio() {
 
           <div id="all-projects">
             {showAllProjects && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className="mt-14">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className="mt-8 md:mt-14">
                 <h3 className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted">
                   {t.projectsSection.allHeading} · {otherProjects.length}
                 </h3>
-                <div className="mt-6 grid gap-5 md:grid-cols-2">
+                <div className="mt-4 grid gap-3 md:mt-6 md:grid-cols-2 md:gap-5">
                   {otherProjects.map((project, index) => (
                     <ProjectCard
                       key={project.id}
@@ -808,19 +832,19 @@ export default function Portfolio() {
             <motion.div
               key={profile + '-skills'}
               {...profileSwap}
-              className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
+              className="mt-8 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 md:mt-14 lg:grid-cols-3"
             >
               {p.skills.map((group, i) => (
-                <div key={group.heading} className="group bg-surface p-7 transition-colors duration-200 ease-out hover:bg-ink">
+                <div key={group.heading} className="group bg-surface p-5 transition-colors md:p-7 duration-200 ease-out hover:bg-ink">
                   <div className="flex items-baseline gap-3">
                     <span className="font-display text-lg italic text-accent" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                     <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper">{group.heading}</h3>
                   </div>
-                  <div className="mt-5 flex flex-wrap gap-x-2 gap-y-2">
+                  <div className="mt-3 flex flex-wrap gap-1.5 md:mt-5 md:gap-2">
                     {group.items.map((item) => (
                       <span
                         key={item}
-                        className="rounded-full border border-line px-3 py-1 text-xs text-muted transition-colors group-hover:border-accent/20 group-hover:text-paper/80"
+                        className="rounded-full border border-line px-2.5 py-0.5 text-[11px] text-muted transition-colors group-hover:border-accent/20 md:px-3 md:py-1 md:text-xs group-hover:text-paper/80"
                       >
                         {item}
                       </span>
@@ -837,20 +861,20 @@ export default function Portfolio() {
       {/* ---------------------------------------------------------------- */}
       <section id="cv" className="grain relative bg-paper section-y text-ink">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
-          <motion.div {...fadeUp} className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+          <motion.div {...fadeUp} className="flex flex-col justify-between gap-5 md:flex-row md:items-end md:gap-8">
             <div>
               <Eyebrow light>{t.sections.cvEyebrow}</Eyebrow>
-              <h2 className="t-h2 mt-5">
+              <h2 className="t-h2 mt-3 md:mt-5">
                 {t.cv.heading.split(' ').slice(0, -1).join(' ')}{' '}
                 <em className="text-accentDeep">{t.cv.heading.split(' ').slice(-1)}</em>
               </h2>
-              <p className="mt-5 max-w-md text-sm leading-relaxed text-mutedInk">{t.cv.description}</p>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-mutedInk md:mt-5">{t.cv.description}</p>
             </div>
             <CVDownload files={p.cvFiles} profileTitle={p.title} label={t.cv.downloadLabel} variant="section" />
           </motion.div>
 
-          <div className="mt-16 grid gap-14 md:grid-cols-3">
-            <div className="space-y-10 md:col-span-1">
+          <div className="mt-8 grid gap-10 md:mt-16 md:grid-cols-3 md:gap-14">
+            <div className="grid gap-8 sm:grid-cols-2 md:col-span-1 md:block md:space-y-10">
               <div>
                 <h3 className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-accentDeep">
                   <Mail size={13} /> {t.cv.contactHeading}
@@ -899,12 +923,12 @@ export default function Portfolio() {
                 <GraduationCap size={13} /> {t.cv.educationHeading}
               </h3>
               {t.education.map((edu) => (
-                <div key={edu.degree} className="border border-lineInk bg-white/40 p-7 transition-colors hover:bg-white/70">
+                <div key={edu.degree} className="border border-lineInk bg-white/40 p-4 transition-colors hover:bg-white/70 md:p-7">
                   <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-start">
-                    <div className="flex min-w-0 flex-col items-start gap-5 sm:flex-row">
+                    <div className="flex min-w-0 items-center gap-4 sm:items-start sm:gap-5">
                       {edu.logo && (
                         // Same square frame for every school logo; `zoom` keeps a centred logo legible.
-                        <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent-deep)_/_0.45),0_16px_34px_-14px_rgb(var(--accent-deep)_/_0.55)] transition-transform duration-[250ms] ease-out hover:scale-[1.02] md:h-32 md:w-32">
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-white sm:h-28 sm:w-28 sm:rounded-xl shadow-[0_0_0_1px_rgb(var(--accent-deep)_/_0.45),0_16px_34px_-14px_rgb(var(--accent-deep)_/_0.55)] transition-transform duration-[250ms] ease-out hover:scale-[1.02] md:h-32 md:w-32">
                           <Image
                             src={edu.logo.src}
                             alt={edu.school.split(' — ')[0]}
@@ -915,31 +939,31 @@ export default function Portfolio() {
                           />
                         </div>
                       )}
-                      <div>
-                      <h4 className="font-display text-2xl leading-tight">{edu.degree}</h4>
-                      <p className="mt-1 text-sm text-mutedInk">{edu.school}</p>
+                      <div className="min-w-0">
+                      <h4 className="font-display text-lg leading-tight sm:text-2xl">{edu.degree}</h4>
+                      <p className="mt-1 text-[13px] text-mutedInk sm:text-sm">{edu.school}</p>
                       </div>
                     </div>
                     <div className="shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk lg:text-right">
                       <p>{edu.period}</p>
                     </div>
                   </div>
-                  <p className="mt-4 text-sm leading-relaxed text-mutedInk">{edu.details}</p>
+                  <p className="mt-3 text-[13px] leading-relaxed text-mutedInk sm:mt-4 sm:text-sm">{edu.details}</p>
                 </div>
               ))}
 
-              <h3 className="flex items-center gap-2 pt-6 font-mono text-[10px] uppercase tracking-[0.25em] text-accentDeep">
+              <h3 className="hidden items-center gap-2 pt-6 font-mono text-[10px] uppercase tracking-[0.25em] text-accentDeep md:flex">
                 <Award size={13} /> {t.nav.projects}
               </h3>
                 <motion.div
                   key={profile + '-cv-projects'}
                   {...profileSwap}
-                  className="divide-y divide-lineInk border-y border-lineInk"
+                  className="hidden divide-y divide-lineInk border-y border-lineInk md:block"
                 >
                   {curatedProjects.map((project) => (
-                    <div key={project.id} className="flex items-center justify-between gap-4 py-3.5">
+                    <div key={project.id} className="flex items-center justify-between gap-4 py-3 md:py-3.5">
                       <div className="min-w-0">
-                        <h4 className="font-display text-lg leading-snug">{project.title}</h4>
+                        <h4 className="font-display text-base leading-snug md:text-lg">{project.title}</h4>
                         <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk">
                           {project.category} · {project.year}
                         </p>
@@ -976,7 +1000,7 @@ export default function Portfolio() {
               <br />
               <em className="text-gold pr-2">{t.contact.heading[1]}</em>
             </h2>
-            <p className="mt-8 max-w-md text-base leading-relaxed text-muted">{t.contact.description}</p>
+            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted md:mt-8 md:text-base">{t.contact.description}</p>
             <p className="mt-4 inline-flex items-center gap-2.5 rounded-full border border-accent/30 bg-accent/[0.06] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.15em] text-accent">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
@@ -986,7 +1010,7 @@ export default function Portfolio() {
             </p>
           </motion.div>
 
-          <div className="mt-20 grid gap-16 md:grid-cols-[1fr_1.2fr]">
+          <div className="mt-10 grid gap-10 md:mt-20 md:grid-cols-[1fr_1.2fr] md:gap-16">
             <motion.div {...fadeUp} className="flex flex-col">
               {[
                 { href: `mailto:${contact.email}`, icon: Mail, label: contact.email, external: false },
@@ -997,11 +1021,11 @@ export default function Portfolio() {
                   key={label}
                   href={href}
                   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="group flex items-center justify-between border-b border-line py-6 transition-colors duration-200 ease-out hover:border-accent/50"
+                  className="group flex items-center justify-between border-b border-line py-4 transition-colors duration-200 ease-out hover:border-accent/50 md:py-6"
                 >
                   <span className="flex items-center gap-4">
                     <Icon size={18} className="text-accent" />
-                    <span className="font-display text-2xl text-paper transition-transform duration-200 ease-out group-hover:translate-x-1 md:text-3xl">
+                    <span className="font-display text-xl text-paper transition-transform duration-200 ease-out group-hover:translate-x-1 md:text-3xl">
                       {label}
                     </span>
                   </span>
@@ -1010,7 +1034,7 @@ export default function Portfolio() {
               ))}
             </motion.div>
 
-            <motion.form {...fadeUp} onSubmit={handleFormSubmit} className="border border-line bg-surface/60 p-7 backdrop-blur md:p-10">
+            <motion.form {...fadeUp} onSubmit={handleFormSubmit} className="border border-line bg-surface/60 p-5 backdrop-blur md:p-10">
               <div className="grid gap-2 sm:grid-cols-2 sm:gap-8">
                 <div>
                 <label htmlFor="contact-name" className="sr-only">{t.contact.form.name}</label>
@@ -1055,7 +1079,7 @@ export default function Portfolio() {
               <button
                 type="submit"
                 disabled={formStatus === 'sending'}
-                className="btn-gold mt-10 flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-semibold tracking-wide transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                className="btn-gold mt-6 flex w-full md:mt-10 items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-semibold tracking-wide transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {formStatus === 'sending' && <Loader2 className="animate-spin" size={16} />}
                 {formStatus === 'sending' ? t.contact.form.sending : t.contact.form.submit}

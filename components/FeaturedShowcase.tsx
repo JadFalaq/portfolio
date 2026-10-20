@@ -22,11 +22,12 @@ interface FeaturedShowcaseProps {
 }
 
 // Each project keeps its visual, evidence and links together at every viewport size.
+// Below lg the cards become a swipeable row so the section stays one screen tall.
 export default function FeaturedShowcase({ projects, diagrams, labels }: FeaturedShowcaseProps) {
   return (
-    <ol className="grid items-stretch gap-5 lg:grid-cols-3">
+    <ol className="relative -mx-5 flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto scroll-px-5 px-5 pb-3 [scrollbar-width:none] md:-mx-10 md:scroll-px-10 md:px-10 lg:mx-0 lg:grid lg:snap-none lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
       {projects.map((project, index) => (
-        <li key={project.id} className="min-w-0">
+        <li key={project.id} className="w-[86%] min-w-0 shrink-0 snap-start sm:w-[60%] lg:w-auto">
           <Row project={project} index={index} diagrams={diagrams} labels={labels} />
         </li>
       ))}
@@ -52,14 +53,14 @@ function Row({
 
   return (
     <article
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-accent/50 focus-within:border-accent/50 sm:p-6"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-surface/60 p-4 transition-colors duration-200 hover:border-accent/50 focus-within:border-accent/50 sm:p-6"
     >
       {project.presentation ? (
-        <div className="mb-6"><PresentationViewer key={project.id} presentation={project.presentation} compact /></div>
+        <div className="mb-4 sm:mb-6"><PresentationViewer key={project.id} presentation={project.presentation} compact /></div>
       ) : project.diagram === 'akwa' ? (
-        <div className="mb-6"><AuditPresentation compact /></div>
+        <div className="mb-4 sm:mb-6"><AuditPresentation compact /></div>
       ) : (
-        <div className="relative mb-6 h-64 overflow-hidden rounded-lg border border-line bg-ink">
+        <div className="relative mb-4 h-44 overflow-hidden sm:mb-6 sm:h-64 rounded-lg border border-line bg-ink">
           <Preview project={project} diagrams={diagrams} />
         </div>
       )}
@@ -71,26 +72,26 @@ function Row({
         <span>{project.year}</span>
       </div>
 
-      <h3 className="mt-3 text-xl font-semibold leading-tight tracking-[-0.025em] text-paper sm:text-2xl">
+      <h3 className="mt-2 text-lg font-semibold leading-tight sm:mt-3 tracking-[-0.025em] text-paper sm:text-2xl">
         {project.shortTitle ?? project.title}
         {project.subtitle && <span className="mt-1 block text-[0.7em] font-medium italic tracking-[-0.01em] text-paper/70">{project.subtitle}</span>}
       </h3>
       {project.role && <p className="mt-1.5 text-xs font-medium text-paper/70">{project.role}</p>}
 
       {project.problem && (
-        <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
+        <p className="mt-3 line-clamp-3 max-w-xl text-sm leading-relaxed text-muted sm:mt-4 sm:line-clamp-none sm:text-[15px]">
           <span className="sr-only">{labels.problem} : </span>
           {project.problem}
         </p>
       )}
-      {project.businessValue && <p className="mt-2 max-w-xl text-sm leading-relaxed text-paper/80">{project.businessValue}</p>}
+      {project.businessValue && <p className="mt-2 hidden max-w-xl sm:block text-sm leading-relaxed text-paper/80">{project.businessValue}</p>}
 
       {results && results.length > 0 ? (
-        <dl className="mt-5 flex flex-wrap gap-x-8 gap-y-3">
+        <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 sm:mt-5 sm:gap-x-8 sm:gap-y-3">
           {results.map((r) => (
             <div key={r.label} className="min-w-[7rem]">
               <dt className="sr-only">{r.label}</dt>
-              <dd className="text-xl font-semibold tracking-[-0.02em] text-paper">{r.value}</dd>
+              <dd className="text-lg font-semibold sm:text-xl tracking-[-0.02em] text-paper">{r.value}</dd>
               <dd className="mt-0.5 max-w-[12rem] text-xs leading-snug text-muted">{r.label}</dd>
             </div>
           ))}
@@ -99,7 +100,7 @@ function Row({
         <p className="mt-5 font-mono text-[12px] text-paper">{project.metric}</p>
       ) : null}
 
-      <ul className="mb-6 mt-5 flex flex-wrap gap-1.5" aria-label="Technologies">
+      <ul className="mb-4 mt-4 flex flex-wrap gap-1.5 sm:mb-6 sm:mt-5" aria-label="Technologies">
         {project.technologies.slice(0, 4).map((tech) => (
           <li key={tech} className="rounded-full border border-line px-2.5 py-1 text-[11px] text-paper/70">
             {tech}
@@ -107,7 +108,7 @@ function Row({
         ))}
       </ul>
 
-      <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-5">
+      <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-4 sm:pt-5">
         {caseHref && (
           <Link
             href={caseHref}
