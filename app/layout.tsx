@@ -1,8 +1,17 @@
 import type { Metadata, Viewport } from 'next'
-import { JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import { Cormorant_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ProfileProvider } from '../contexts/ProfileContext'
+
+// Hero only: name and title in a classical serif.
+const hero = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-hero',
+  display: 'swap',
+})
 
 const mono = JetBrains_Mono({
   subsets: ['latin'],
@@ -64,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className={`motion-safe:scroll-smooth ${mono.variable} ${sans.variable}`}>
+    <html lang="fr" className={`motion-safe:scroll-smooth ${hero.variable} ${mono.variable} ${sans.variable}`}>
       <body className="font-sans">
         <LanguageProvider>
           <ProfileProvider>{children}</ProfileProvider>

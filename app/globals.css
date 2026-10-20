@@ -15,19 +15,21 @@
 
 :root,
 [data-profile='data-ai'] {
-  --accent: 79 184 196;        /* teal */
-  --accent-light: 168 228 234;
-  --accent-deep: 31 110 125;   /* readable on ivory */
+  /* Red · yellow · blue, tuned to the same perceived luminance:
+     every accent is 6.8:1 on ink, every deep variant 6:1 on ivory. */
+  --accent: 106 156 220;       /* blue — data */
+  --accent-light: 181 206 238;
+  --accent-deep: 46 90 148;    /* readable on ivory */
 }
 [data-profile='genai'] {
-  --accent: 183 148 246;       /* violet */
-  --accent-light: 220 202 252;
-  --accent-deep: 106 67 184;
+  --accent: 191 147 24;        /* gold yellow — generative AI */
+  --accent-light: 236 200 100;
+  --accent-deep: 109 86 22;
 }
 [data-profile='mlops'] {
-  --accent: 238 143 106;       /* coral */
-  --accent-light: 248 196 174;
-  --accent-deep: 168 78 44;
+  --accent: 229 121 118;       /* red — ML in production */
+  --accent-light: 242 190 189;
+  --accent-deep: 163 48 44;
 }
 
 
@@ -77,6 +79,14 @@ section[id],
 }
 
 @layer components {
+  /* Handwritten signature logo (public/logo-signature.svg) painted with currentColor. */
+  .logo-signature {
+    display: block;
+    background-color: currentColor;
+    -webkit-mask: url('/logo-signature.svg') center / contain no-repeat;
+    mask: url('/logo-signature.svg') center / contain no-repeat;
+  }
+
   /* Layout & type scale — one rhythm for every section. */
   .section-y {
     padding-block: clamp(4.5rem, 9vw, 7rem);

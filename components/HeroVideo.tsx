@@ -8,7 +8,7 @@ interface HeroVideoProps {
   playLabel: string
 }
 
-// Muted full-bleed background loop (no audio track), centred on the subject. The poster is the server-rendered frame, so the
+// Muted loop (no audio track): whole 16:9 frame on phones, full-bleed background from md up. The poster is the server-rendered frame, so the
 // hero is complete without JavaScript; playback only starts after hydration, never when
 // the visitor prefers reduced motion, and pauses while off-screen or in a hidden tab.
 export default function HeroVideo({ pauseLabel, playLabel }: HeroVideoProps) {
@@ -79,13 +79,12 @@ export default function HeroVideo({ pauseLabel, playLabel }: HeroVideoProps) {
         tabIndex={-1}
       >
         <source src="/hero-intro.mp4" type="video/mp4" />
-        <source src="/hero-intro.webm" type="video/webm" />
       </video>
       <button
         type="button"
         onClick={toggle}
         aria-label={playing ? pauseLabel : playLabel}
-        className="absolute right-5 top-24 z-10 flex h-11 w-11 md:right-10 items-center justify-center rounded-full border border-paper/25 bg-ink/60 text-paper backdrop-blur transition-colors duration-200 ease-out hover:border-accent hover:text-accent"
+        className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center md:right-10 md:top-24 justify-center rounded-full border border-paper/25 bg-ink/60 text-paper backdrop-blur transition-colors duration-200 ease-out hover:border-accent hover:text-accent"
       >
         {playing ? <Pause size={15} aria-hidden="true" /> : <Play size={15} aria-hidden="true" />}
       </button>

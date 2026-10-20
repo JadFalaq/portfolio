@@ -39,9 +39,9 @@ const ROMAN = ['I', 'II', 'III']
 
 // One color per profile, used by the navbar switcher and the mobile menu.
 const PROFILE_COLORS: Record<ProfileId, string> = {
-  'data-ai': '#4FB8C4', // teal
-  genai: '#B794F6', // violet
-  mlops: '#EE8F6A', // coral
+  'data-ai': '#6A9CDC', // blue
+  genai: '#BF9318', // gold yellow
+  mlops: '#E57976', // red
 }
 
 const fadeUp = {
@@ -242,10 +242,8 @@ export default function Portfolio() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-10">
-          <a href="#hero" className="group flex items-baseline gap-2" aria-label="Jad Falaq — accueil">
-            <span className="font-display text-3xl italic leading-none text-paper">J</span>
-            <span className="h-1.5 w-1.5 rounded-full bg-accent transition-transform duration-200 ease-out group-hover:scale-150" />
-            <span className="font-display text-3xl italic leading-none text-paper">F</span>
+          <a href="#hero" className="flex min-h-[44px] items-center text-paper transition-colors duration-200 ease-out hover:text-accent" aria-label="Jad Falaq — accueil">
+            <span className="logo-signature h-12 w-[67px]" aria-hidden="true" />
           </a>
 
           <div className="hidden items-center gap-6 lg:flex xl:gap-8">
@@ -399,27 +397,29 @@ export default function Portfolio() {
           from the server HTML instead of waiting for hydration. */}
       {/* Full-bleed video background; profile details sit at the bottom over a gradient.
           The poster is in the server HTML, so the hero is complete without JavaScript. */}
-      <section id="hero" className="relative isolate flex min-h-[100svh] items-end overflow-hidden pb-14 pt-28 md:pb-20">
-        <div className="absolute inset-0 -z-10">
+      <section id="hero" className="relative isolate flex flex-col overflow-hidden pb-12 pt-[72px] md:min-h-[100svh] md:justify-end md:pb-20 md:pt-28">
+        {/* Phones: the whole 16:9 frame on top (no zoom). md+: full-bleed background. */}
+        <div className="relative aspect-video w-full md:absolute md:inset-0 md:-z-10 md:aspect-auto">
           <HeroVideo pauseLabel={t.hero.videoPause} playLabel={t.hero.videoPlay} />
           {/* Legibility: dark at the bottom (text) and top (navbar), lighter in the middle. */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink via-ink/75 to-ink/10" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/80 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink to-transparent md:hidden" />
+          <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-t from-ink via-ink/70 to-ink/5 md:block" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 hidden h-40 bg-gradient-to-b from-ink/80 to-transparent md:block" />
           <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-2/3 bg-gradient-to-r from-ink/70 to-transparent md:block" />
         </div>
 
-        <div className="relative mx-auto w-full max-w-7xl px-5 md:px-10">
+        <div className="relative mx-auto mt-6 w-full max-w-7xl px-5 md:mt-0 md:px-10">
           <div className="max-w-3xl">
             <div className="hero-rise">
               <Eyebrow>{t.hero.eyebrow}</Eyebrow>
             </div>
             <h1
-              className="hero-rise mt-5 font-display text-[clamp(2.75rem,8vw,6rem)] leading-[0.95] tracking-[-0.045em] text-paper"
+              className="hero-rise mt-5 font-hero text-[clamp(3rem,9vw,7rem)] font-semibold leading-[0.9] tracking-[-0.015em] text-paper"
               style={{ animationDelay: '60ms' }}
             >
               Jad <em className="text-gold pr-2">Falaq</em>
             </h1>
-            <p className="hero-rise mt-4 max-w-xl text-lg font-medium leading-snug text-paper md:text-xl" style={{ animationDelay: '140ms' }}>
+            <p className="hero-rise mt-4 max-w-xl font-hero text-[1.35rem] font-medium italic leading-snug text-paper md:text-2xl" style={{ animationDelay: '140ms' }}>
               {t.hero.role}
             </p>
           </div>
