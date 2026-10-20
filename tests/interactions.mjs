@@ -22,7 +22,7 @@ const ctxFor = (opts = {}) => browser.newContext({ viewport: { width: 1440, heig
   const r = await page.evaluate(() => {
     const op = (el) => Number(getComputedStyle(el).opacity)
     const h1 = document.querySelector('h1')
-    const ctas = [...document.querySelectorAll('#hero a')].filter((a) => /Explorer mes projets|Télécharger mon CV|Me contacter/.test(a.textContent))
+    const ctas = [...document.querySelectorAll('#hero a, #hero button')].filter((a) => /Explorer mes projets|Télécharger mon CV|Me contacter/.test(a.textContent))
     return { h1: h1 && h1.textContent.includes('Jad Falaq'), heroOpacity: Math.min(...[...document.querySelectorAll('#hero .hero-rise')].map(op)), ctas: ctas.length }
   })
   ok('no-JS: h1 with name rendered', r.h1)

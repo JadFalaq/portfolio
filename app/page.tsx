@@ -7,7 +7,6 @@ import {
   ArrowUpRight,
   ArrowUp,
   ArrowDown,
-  Download,
   Mail,
   Github,
   Linkedin,
@@ -24,6 +23,7 @@ import {
   Check,
 } from 'lucide-react'
 import ProjectCard from '../components/ProjectCard'
+import CVDownload from '../components/CVDownload'
 import FeaturedShowcase from '../components/FeaturedShowcase'
 import HeroVideo from '../components/HeroVideo'
 import AkwaPipeline from '../components/AkwaPipeline'
@@ -414,12 +414,12 @@ export default function Portfolio() {
               <Eyebrow>{t.hero.eyebrow}</Eyebrow>
             </div>
             <h1
-              className="hero-rise mt-5 font-hero text-[clamp(3rem,9vw,7rem)] font-semibold leading-[0.9] tracking-[-0.015em] text-paper"
+              className="hero-rise mt-5 font-hero text-[clamp(2.75rem,8vw,6.25rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-paper"
               style={{ animationDelay: '60ms' }}
             >
-              Jad <em className="text-gold pr-2">Falaq</em>
+              Jad <em className="text-gold pr-1 not-italic">Falaq</em>
             </h1>
-            <p className="hero-rise mt-4 max-w-xl font-hero text-[1.35rem] font-medium italic leading-snug text-paper md:text-2xl" style={{ animationDelay: '140ms' }}>
+            <p className="hero-rise mt-4 max-w-xl font-hero text-lg font-light leading-snug tracking-[-0.01em] text-paper md:text-[1.4rem]" style={{ animationDelay: '140ms' }}>
               {t.hero.role}
             </p>
           </div>
@@ -447,15 +447,7 @@ export default function Portfolio() {
                 {t.hero.ctaProjects}
                 <ArrowDown size={16} aria-hidden="true" className="icon-nudge-down" />
               </a>
-              <a
-                href={p.cvFile}
-                download
-                aria-label={`${t.hero.ctaCV} — ${p.title} (PDF)`}
-                className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-paper/25 px-7 text-sm tracking-wide text-paper transition-colors duration-200 ease-out hover:border-accent hover:bg-accent/[0.06] hover:text-accent"
-              >
-                <Download size={15} aria-hidden="true" className="icon-nudge-down" />
-                {t.hero.ctaCV}
-              </a>
+              <CVDownload files={p.cvFiles} profileTitle={p.title} label={t.hero.ctaCV} />
               <a
                 href="#contact"
                 className="group flex min-h-[48px] items-center justify-center gap-2 rounded-full px-5 text-sm tracking-wide text-paper/85 transition-colors duration-200 ease-out hover:text-accent"
@@ -854,18 +846,7 @@ export default function Portfolio() {
               </h2>
               <p className="mt-5 max-w-md text-sm leading-relaxed text-mutedInk">{t.cv.description}</p>
             </div>
-            <a
-              href={p.cvFile}
-              download
-              className="group flex w-fit items-center gap-3 rounded-full bg-ink py-2 pl-6 pr-2 text-sm text-paper transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_15px_40px_-15px_rgba(10,13,19,0.6)]"
-            >
-              <span>
-                {t.cv.downloadLabel} <span className="font-display text-base italic text-accent">— {p.title}</span>
-              </span>
-              <span className="btn-gold flex h-10 w-10 items-center justify-center rounded-full">
-                <Download size={16} />
-              </span>
-            </a>
+            <CVDownload files={p.cvFiles} profileTitle={p.title} label={t.cv.downloadLabel} variant="section" />
           </motion.div>
 
           <div className="mt-16 grid gap-14 md:grid-cols-3">
@@ -919,18 +900,17 @@ export default function Portfolio() {
               </h3>
               {t.education.map((edu) => (
                 <div key={edu.degree} className="border border-lineInk bg-white/40 p-7 transition-colors hover:bg-white/70">
-                  <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
-                    <div className="flex flex-col items-start gap-5 sm:flex-row">
+                  <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-start">
+                    <div className="flex min-w-0 flex-col items-start gap-5 sm:flex-row">
                       {edu.logo && (
-                        // Natural aspect ratio (4:3 and square) so neither logo is cropped.
-                        <div className="shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent-deep)_/_0.45),0_16px_34px_-14px_rgb(var(--accent-deep)_/_0.55)] transition-transform duration-[250ms] ease-out hover:scale-[1.02]">
+                        // Same square frame for every school logo; `zoom` keeps a centred logo legible.
+                        <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_0_0_1px_rgb(var(--accent-deep)_/_0.45),0_16px_34px_-14px_rgb(var(--accent-deep)_/_0.55)] transition-transform duration-[250ms] ease-out hover:scale-[1.02] md:h-32 md:w-32">
                           <Image
                             src={edu.logo.src}
                             alt={edu.school.split(' — ')[0]}
-                            width={edu.logo.width}
-                            height={edu.logo.height}
-                            sizes="320px"
-                            className="h-24 w-auto md:h-28"
+                            fill
+                            sizes="128px"
+                            className="object-cover"
                             style={edu.logo.zoom ? { transform: `scale(${edu.logo.zoom})` } : undefined}
                           />
                         </div>
@@ -940,7 +920,7 @@ export default function Portfolio() {
                       <p className="mt-1 text-sm text-mutedInk">{edu.school}</p>
                       </div>
                     </div>
-                    <div className="shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk md:text-right">
+                    <div className="shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-mutedInk lg:text-right">
                       <p>{edu.period}</p>
                     </div>
                   </div>
@@ -1115,9 +1095,7 @@ export default function Portfolio() {
               <a href={contact.githubUrl} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-accent">
                 GitHub
               </a>
-              <a href={p.cvFile} download className="flex items-center gap-1.5 text-paper transition-colors hover:text-accent">
-                <Download size={12} aria-hidden="true" /> CV
-              </a>
+              <CVDownload files={p.cvFiles} profileTitle={p.title} label="CV" variant="footer" />
             </nav>
             <a href="#hero" className="group flex items-center gap-2 transition-colors hover:text-accent">
               <ArrowUp size={13} className="transition-transform group-hover:-translate-y-0.5" />

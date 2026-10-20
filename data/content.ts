@@ -1,3 +1,4 @@
+import { profileCVs } from './cvs'
 import { dentalPresentation, type ProjectPresentation } from './presentations'
 import type { Language } from '../contexts/LanguageContext'
 import type { ProfileId } from '../contexts/ProfileContext'
@@ -96,7 +97,7 @@ export interface ProfileContent {
   featuredIds: [string, string, string]
   /** Order of the remaining projects in "view all" and in the CV section. */
   projectIds: string[]
-  cvFile: string
+  cvFiles: Record<Language, string>
 }
 
 export interface SiteContent {
@@ -220,7 +221,7 @@ const contactInfo = {
 }
 
 const schoolLogos = {
-  ensias: { src: '/ensias_logo.jpeg', width: 2390, height: 1792, zoom: 1.7 },
+  ensias: { src: '/ensias_logo_square.jpg', width: 512, height: 512 },
   cpge: { src: '/cpge_mohamed_v_casablanca_logo.jpeg', width: 200, height: 200 },
 }
 
@@ -248,7 +249,7 @@ const projectMeta: Record<string, ProjectMeta> = {
   },
   ragchatbot: {
     slug: 'rag-strategies',
-    technologies: ['LangChain', 'Azure OpenAI', 'ChromaDB', 'Unstructured', 'Google Cloud Vision', 'Pydantic', 'MMR', 'Multi-Query', 'RRF'],
+    technologies: ['LangChain', 'Azure OpenAI', 'ChromaDB', 'Unstructured', 'Pydantic', 'MMR', 'Multi-Query', 'RRF'],
     github: 'https://github.com/JadFalaq/Comparing-RAG-Strategies-Chunking-Retrieval-Ranking',
     image: '/rag_card.png',
     year: '2026',
@@ -363,7 +364,7 @@ const projectsFr: Record<string, ProjectText> = {
   },
   ragchatbot: {
     title: 'Stratégies RAG : chunking, retrieval et ranking',
-    description: "Implémentation pas à pas d'un pipeline RAG sur Azure OpenAI et ChromaDB, en comparant les stratégies à chaque étape : découpage (par caractères, sémantique, agentique par LLM), recherche (similarité, seuil de score, MMR, multi-query) et fusion des classements (Reciprocal Rank Fusion). Inclut une génération conversationnelle tenant compte de l'historique et un RAG multimodal (Unstructured, Google Cloud Vision).",
+    description: "Implémentation pas à pas d'un pipeline RAG sur Azure OpenAI et ChromaDB, en comparant les stratégies à chaque étape : découpage (par caractères, sémantique, agentique par LLM), recherche (similarité, seuil de score, MMR, multi-query) et fusion des classements (Reciprocal Rank Fusion). Inclut une génération conversationnelle tenant compte de l'historique et un RAG multimodal (Unstructured, descriptions de tableaux et d'images par le LLM).",
     problem: "Comparer, étape par étape, les stratégies de chunking, de retrieval et de classement d'un pipeline RAG.",
     summary: "Pipeline RAG sur Azure OpenAI et ChromaDB qui compare les stratégies à chaque étape : chunking (caractères, sémantique, agentique), retrieval (seuil de score, MMR, multi-query) et fusion des classements (RRF), plus un RAG multimodal.",
     category: 'IA Générative & RAG',
@@ -371,10 +372,10 @@ const projectsFr: Record<string, ProjectText> = {
   },
   bookpipeline: {
     title: "Pipeline automatisé d'ingestion et de traitement de livres",
-    description: 'Pipeline orchestré par Apache Airflow (CeleryExecutor, Redis, PostgreSQL, Docker Compose) qui découvre et analyse des livres PDF/EPUB, puis appelle un service ML Flask : résumés à plusieurs niveaux et plus de 20 questions-réponses par livre (FLAN-T5), traduction en français et en arabe (NLLB-200) et synthèse vocale (Coqui TTS, gTTS). Le dynamic task mapping traite chaque livre en parallèle.',
+    description: 'Pipeline orchestré par Apache Airflow (CeleryExecutor, Redis, PostgreSQL, Docker Compose) qui découvre et analyse des livres PDF/EPUB, puis appelle un service ML Flask : résumés à plusieurs niveaux et plus de 20 questions-réponses par livre (FLAN-T5), traduction en français et en arabe (NLLB-200) et synthèse vocale (Coqui TTS, gTTS). Le dynamic task mapping crée une branche par livre pour l’analyse, les résumés et les questions-réponses.',
     problem: "Transformer automatiquement des livres PDF/EPUB en résumés, questions-réponses, traductions et audio.",
     results: [{ value: "≥ 20", label: "paires Q&A par livre (garanti par le service)" }],
-    summary: "Pipeline Apache Airflow (CeleryExecutor, Redis, PostgreSQL, Docker Compose) qui découvre et analyse des livres PDF/EPUB, les traite en parallèle (dynamic task mapping) et appelle un service ML : résumés, questions-réponses, traduction et synthèse vocale.",
+    summary: "Pipeline Apache Airflow (CeleryExecutor, Redis, PostgreSQL, Docker Compose) qui découvre et analyse des livres PDF/EPUB, analyse chaque livre dans sa propre branche (dynamic task mapping) et appelle un service ML : résumés, questions-réponses, traduction et synthèse vocale.",
     category: 'Data Engineering & GenAI',
     status: 'Projet académique',
   },
@@ -488,7 +489,7 @@ const projectsEn: Record<string, ProjectText> = {
   },
   ragchatbot: {
     title: 'RAG Strategies: Chunking, Retrieval & Ranking',
-    description: 'Step-by-step implementation of a RAG pipeline on Azure OpenAI and ChromaDB, comparing strategies at every stage: chunking (character-based, semantic, LLM-driven agentic), retrieval (similarity, score threshold, MMR, multi-query) and rank fusion (Reciprocal Rank Fusion). Includes history-aware conversational generation and multimodal RAG (Unstructured, Google Cloud Vision).',
+    description: 'Step-by-step implementation of a RAG pipeline on Azure OpenAI and ChromaDB, comparing strategies at every stage: chunking (character-based, semantic, LLM-driven agentic), retrieval (similarity, score threshold, MMR, multi-query) and rank fusion (Reciprocal Rank Fusion). Includes history-aware conversational generation and multimodal RAG (Unstructured, LLM descriptions of tables and images).',
     problem: "Compare, stage by stage, the chunking, retrieval and ranking strategies of a RAG pipeline.",
     summary: "RAG pipeline on Azure OpenAI and ChromaDB comparing strategies at every stage: chunking (character, semantic, agentic), retrieval (score threshold, MMR, multi-query) and rank fusion (RRF), plus multimodal RAG.",
     category: 'Generative AI & RAG',
@@ -496,10 +497,10 @@ const projectsEn: Record<string, ProjectText> = {
   },
   bookpipeline: {
     title: 'Automated Book Ingestion & Processing Pipeline',
-    description: 'Apache Airflow pipeline (CeleryExecutor, Redis, PostgreSQL, Docker Compose) that discovers and parses PDF/EPUB books, then calls a Flask ML service: multi-level summaries and 20+ question-answer pairs per book (FLAN-T5), French and Arabic translation (NLLB-200) and text-to-speech (Coqui TTS, gTTS). Dynamic task mapping processes every book in parallel.',
+    description: 'Apache Airflow pipeline (CeleryExecutor, Redis, PostgreSQL, Docker Compose) that discovers and parses PDF/EPUB books, then calls a Flask ML service: multi-level summaries and 20+ question-answer pairs per book (FLAN-T5), French and Arabic translation (NLLB-200) and text-to-speech (Coqui TTS, gTTS). Dynamic task mapping creates one branch per book for parsing, summaries and Q&A.',
     problem: "Automatically turn PDF/EPUB books into summaries, Q&A, translations and audio.",
     results: [{ value: "≥ 20", label: "Q&A pairs per book (enforced by the service)" }],
-    summary: "Apache Airflow pipeline (CeleryExecutor, Redis, PostgreSQL, Docker Compose) that discovers and parses PDF/EPUB books, processes them in parallel (dynamic task mapping) and calls an ML service: summaries, Q&A, translation and text-to-speech.",
+    summary: "Apache Airflow pipeline (CeleryExecutor, Redis, PostgreSQL, Docker Compose) that discovers and parses PDF/EPUB books, handles each book in its own branch (dynamic task mapping) and calls an ML service: summaries, Q&A, translation and text-to-speech.",
     category: 'Data Engineering & GenAI',
     status: 'Academic project',
   },
@@ -697,7 +698,7 @@ const fr: SiteContent = {
   },
   cv: {
     heading: 'Curriculum Vitae',
-    description: "Chaque profil a son propre CV, recadré sur les expériences et projets les plus pertinents.",
+    description: "Chaque profil a son propre CV. Choisissez la version française ou anglaise au moment du téléchargement.",
     downloadLabel: 'Télécharger le CV',
     contactHeading: 'Contact',
     languagesHeading: 'Langues',
@@ -724,9 +725,8 @@ const fr: SiteContent = {
   ],
   languages: [
     { name: 'Français', level: 'Langue maternelle' },
-    { name: 'Anglais', level: 'Bilingue' },
     { name: 'Arabe', level: 'Langue maternelle' },
-    { name: 'Espagnol', level: 'B1' },
+    { name: 'Anglais', level: 'Bilingue' },
   ],
   softSkills: [
     { title: 'Organisation & Travail en équipe', description: 'Responsable logistique du Forum Club ENSIAS (rencontres entreprises–étudiants)' },
@@ -794,7 +794,7 @@ const fr: SiteContent = {
         { heading: 'Back-end & Automatisation', items: ['Python', 'FastAPI', 'Pydantic', 'REST APIs', 'Power Automate', 'Power Platform', 'SharePoint'] },
       ],
       projectIds: ['audit', 'dental', 'cvmatcher', 'shoplifting', 'motoscraper', 'irrigation', 'segmentation', 'deeplearning', 'misinformation', 'speaker'],
-      cvFile: '/CV_Jad_Falaq_DataAI_FR.pdf',
+      cvFiles: profileCVs['data-ai'],
       featuredIds: ['audit', 'renault', 'dental'],
     },
     genai: {
@@ -841,7 +841,7 @@ const fr: SiteContent = {
         { heading: 'ML, Deep Learning & MLOps', items: ['Scikit-learn', 'PyTorch', 'YOLOv8', 'Computer Vision', 'MLflow', 'DVC', 'Docker', 'GitHub Actions', 'Azure', 'Cloudflare'] },
       ],
       projectIds: ['cvmatcher', 'ragchatbot', 'bookpipeline', 'misinformation', 'dental', 'deeplearning'],
-      cvFile: '/CV_Jad_Falaq_GenAI_FR.pdf',
+      cvFiles: profileCVs['genai'],
       featuredIds: ['renault', 'cvmatcher', 'ragchatbot'],
     },
     mlops: {
@@ -889,7 +889,7 @@ const fr: SiteContent = {
         { heading: 'Serving, Data & Cloud', items: ['Python', 'FastAPI', 'Pydantic', 'REST APIs', 'SQL', 'PostgreSQL', 'Azure'] },
       ],
       projectIds: ['dental', 'pointfed', 'shoplifting', 'deeplearning', 'misinformation', 'segmentation', 'speaker', 'audit', 'ccsvm'],
-      cvFile: '/CV_Jad_Falaq_MLOps_FR.pdf',
+      cvFiles: profileCVs['mlops'],
       featuredIds: ['dental', 'audit', 'misinformation'],
     },
   },
@@ -984,7 +984,7 @@ const en: SiteContent = {
   },
   cv: {
     heading: 'Curriculum Vitae',
-    description: 'Each profile has its own CV, reframed around its most relevant experience and projects.',
+    description: 'Each profile has its own CV. Choose French or English when downloading.',
     downloadLabel: 'Download CV',
     contactHeading: 'Contact',
     languagesHeading: 'Languages',
@@ -1011,9 +1011,8 @@ const en: SiteContent = {
   ],
   languages: [
     { name: 'French', level: 'Native' },
-    { name: 'English', level: 'Bilingual' },
     { name: 'Arabic', level: 'Native' },
-    { name: 'Spanish', level: 'B1' },
+    { name: 'English', level: 'Bilingual' },
   ],
   softSkills: [
     { title: 'Organization & Teamwork', description: 'Logistics lead of the ENSIAS Forum Club (company–student meetings)' },
@@ -1081,7 +1080,7 @@ const en: SiteContent = {
         { heading: 'Back-end & Automation', items: ['Python', 'FastAPI', 'Pydantic', 'REST APIs', 'Power Automate', 'Power Platform', 'SharePoint'] },
       ],
       projectIds: ['audit', 'dental', 'cvmatcher', 'shoplifting', 'motoscraper', 'irrigation', 'segmentation', 'deeplearning', 'misinformation', 'speaker'],
-      cvFile: '/CV_Jad_Falaq_DataAI_EN.pdf',
+      cvFiles: profileCVs['data-ai'],
       featuredIds: ['audit', 'renault', 'dental'],
     },
     genai: {
@@ -1128,7 +1127,7 @@ const en: SiteContent = {
         { heading: 'ML, Deep Learning & MLOps', items: ['Scikit-learn', 'PyTorch', 'YOLOv8', 'Computer Vision', 'MLflow', 'DVC', 'Docker', 'GitHub Actions', 'Azure', 'Cloudflare'] },
       ],
       projectIds: ['cvmatcher', 'ragchatbot', 'bookpipeline', 'misinformation', 'dental', 'deeplearning'],
-      cvFile: '/CV_Jad_Falaq_GenAI_EN.pdf',
+      cvFiles: profileCVs['genai'],
       featuredIds: ['renault', 'cvmatcher', 'ragchatbot'],
     },
     mlops: {
@@ -1176,7 +1175,7 @@ const en: SiteContent = {
         { heading: 'Serving, Data & Cloud', items: ['Python', 'FastAPI', 'Pydantic', 'REST APIs', 'SQL', 'PostgreSQL', 'Azure'] },
       ],
       projectIds: ['dental', 'pointfed', 'shoplifting', 'deeplearning', 'misinformation', 'segmentation', 'speaker', 'audit', 'ccsvm'],
-      cvFile: '/CV_Jad_Falaq_MLOps_EN.pdf',
+      cvFiles: profileCVs['mlops'],
       featuredIds: ['dental', 'audit', 'misinformation'],
     },
   },

@@ -13,9 +13,9 @@ const ok = (name, pass, info = '') => {
 }
 
 const EXPECT = {
-  'data-ai': { cv: '/CV_Jad_Falaq_DataAI_FR.pdf', featured: ['Audit Intelligent', 'Renault Digital', 'Snani'] },
-  genai: { cv: '/CV_Jad_Falaq_GenAI_FR.pdf', featured: ['Renault Digital', 'cvmatch', 'Stratégies RAG'] },
-  mlops: { cv: '/CV_Jad_Falaq_MLOps_FR.pdf', featured: ['Snani', 'Audit Intelligent', 'désinformation médicale'] },
+  'data-ai': { cv: '/cv/CV_Jad_Falaq_Portfolio_Data_AI_Engineer.pdf', featured: ['Audit Intelligent', 'Renault Digital', 'Snani'] },
+  genai: { cv: '/cv/CV_Jad_Falaq_Portfolio_GenAI_Engineer.pdf', featured: ['Renault Digital', 'cvmatch', 'Stratégies RAG'] },
+  mlops: { cv: '/cv/CV_Jad_Falaq_Portfolio_ML_Engineer.pdf', featured: ['Snani', 'Audit Intelligent', 'désinformation médicale'] },
 }
 const LABELS = { 'data-ai': 0, genai: 1, mlops: 2 }
 
@@ -33,7 +33,7 @@ for (const w of [320, 375, 390, 430, 768, 1024, 1440]) {
   const h1 = await page.locator('h1').boundingBox()
   ok(`h1 fits @${w}px`, h1 && h1.x >= 0 && h1.x + h1.width <= w, JSON.stringify(h1 && { x: Math.round(h1.x), w: Math.round(h1.width) }))
   for (const name of ['Explorer mes projets', 'Télécharger mon CV', 'Me contacter']) {
-    const box = await page.getByRole('link', { name: new RegExp(name) }).first().boundingBox()
+    const box = await page.getByRole(name === 'Télécharger mon CV' ? 'button' : 'link', { name: new RegExp(name) }).first().boundingBox()
     ok(`CTA "${name}" ≥44px tall @${w}px`, box && box.height >= 44, box ? `h=${Math.round(box.height)}` : 'missing')
   }
   if (OUT) await page.screenshot({ path: `${OUT}/pw_hero_${w}.png` })
@@ -56,7 +56,11 @@ for (const w of [1440, 390]) {
     await page.waitForTimeout(450)
     ok(`[${w}] ${id}: selector aria-pressed`, (await btn.getAttribute('aria-pressed')) === 'true')
     ok(`[${w}] ${id}: html[data-profile]`, (await page.evaluate(() => document.documentElement.dataset.profile)) === id)
-    const cvHref = await page.getByRole('link', { name: /Télécharger mon CV/ }).first().getAttribute('href')
+    await page.getByRole('button', { name: /Télécharger mon CV/ }).click()
+    const dialog = page.getByRole('dialog')
+    const cvHref = await dialog.locator('a[hreflang=fr]').getAttribute('href')
+    ok(`[${w}] ${id}: both CV languages offered`, await dialog.locator('a[download]').count() === 2)
+    await page.keyboard.press('Escape')
     ok(`[${w}] ${id}: hero CV link`, cvHref === exp.cv, cvHref)
     const res = await page.request.get(new URL(cvHref, BASE).toString())
     ok(`[${w}] ${id}: CV served as PDF`, res.status() === 200 && res.headers()['content-type'] === 'application/pdf')
@@ -65,7 +69,9 @@ for (const w of [1440, 390]) {
     ok(`[${w}] ${id}: featured order`, exp.featured.every((f, i) => titles[i]?.includes(f)), titles.join(' | '))
     const emptyLinks = await page.locator('#projects article a').evaluateAll((as) => as.filter((a) => !a.getAttribute('href')).length)
     ok(`[${w}] ${id}: no empty featured links`, emptyLinks === 0)
-    const cvSection = await page.locator('#cv a[download]').getAttribute('href')
+    await page.locator('#cv').getByRole('button', { name: /Télécharger le CV/ }).click()
+    const cvSection = await page.getByRole('dialog').locator('a[hreflang=fr]').getAttribute('href')
+    await page.keyboard.press('Escape')
     ok(`[${w}] ${id}: CV section link`, cvSection === exp.cv, cvSection)
   }
 
@@ -145,19 +151,21 @@ for (const w of [1440, 390]) {
   await ctx.close()
 }
 
-// 4. English locale renders the EN CV.
+// 4. English locale offers both document languages; English CV maps to the current profile.
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'en-US', reducedMotion: 'reduce' })
   const page = await ctx.newPage()
   await page.goto(BASE, { waitUntil: 'networkidle' })
   await page.waitForTimeout(300)
   const selector = page.locator('#profiles')
-  for (const [i, file] of ['DataAI', 'GenAI', 'MLOps'].entries()) {
+  for (const [i, file] of ['Data_AI_Engineer', 'GenAI_Engineer', 'ML_Engineer'].entries()) {
     await selector.getByRole('button').nth(i).click()
     await page.waitForTimeout(300)
-    const href = await page.getByRole('link', { name: /Download my CV/ }).first().getAttribute('href')
+    await page.getByRole('button', { name: /Download my CV/ }).click()
+    const href = await page.getByRole('dialog').locator('a[hreflang=en]').getAttribute('href')
+    await page.keyboard.press('Escape')
     const res = await page.request.get(new URL(href, BASE).toString())
-    ok(`EN: ${file} CV link + PDF`, href === `/CV_Jad_Falaq_${file}_EN.pdf` && res.headers()['content-type'] === 'application/pdf', href)
+    ok(`EN: ${file} CV link + PDF`, href === `/cv/CV_Jad_Falaq_Portfolio_${file}_EN.pdf` && res.headers()['content-type'] === 'application/pdf', href)
   }
   ok('EN: html lang=en', (await page.evaluate(() => document.documentElement.lang)) === 'en')
   await ctx.close()

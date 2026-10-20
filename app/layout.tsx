@@ -1,14 +1,13 @@
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import { JetBrains_Mono, Plus_Jakarta_Sans, Sora } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ProfileProvider } from '../contexts/ProfileContext'
 
-// Hero only: name and title in a classical serif.
-const hero = Cormorant_Garamond({
+// Hero only: name and title in a geometric, modern sans.
+const hero = Sora({
   subsets: ['latin'],
-  weight: ['500', '600'],
-  style: ['normal', 'italic'],
+  weight: ['300', '600'],
   variable: '--font-hero',
   display: 'swap',
 })

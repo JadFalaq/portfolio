@@ -23,7 +23,7 @@ module.exports = {
       },
       fontFamily: {
         display: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        hero: ['var(--font-hero)', 'ui-serif', 'Georgia', 'serif'],
+        hero: ['var(--font-hero)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
