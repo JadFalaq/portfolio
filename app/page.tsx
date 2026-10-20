@@ -666,6 +666,7 @@ export default function Portfolio() {
                       <p className="flex items-center gap-1.5 text-paper md:justify-end">
                         <Calendar size={12} className="text-accent" /> {exp.period}
                       </p>
+                      {exp.location && <p className="mt-1 normal-case tracking-[0.05em] md:mt-2">{exp.location}</p>}
                     </div>
 
                     {/* Everything stays visible — the card only sharpens its border on hover/focus. */}
